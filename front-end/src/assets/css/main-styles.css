@@ -1,0 +1,109 @@
+.left {
+    flex: 1.5;
+    min-width: 180px;
+    background-color: #003366;
+
+}
+
+.fixed-nav {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}
+
+.nav-branch {
+    font-weight: bold;
+    color: white;
+    padding: 10px 20px 10px 20px;
+    /*margin: 10px 20px 10px 20px;;*/
+    border-bottom: 1px solid #004c99;
+}
+
+.type {
+    font-weight: normal;
+    color: white;
+    padding-left: 25%;
+    /*display: block;*/
+}
+
+.nav-branch:hover {
+    color: gold;
+    background-color: #004c99;
+}
+
+.nav-branch:focus {
+    color: gold;
+    background-color: #004c99;
+}
+
+.nav-branch-focus {
+    color: gold;
+    background-color: #004c99;
+}
+
+.type:hover {
+    color: gold;
+    background-color: #004c99;
+}
+
+.type:focus {
+    color: gold;
+    background-color: #004c99;
+}
+
+.right {
+    flex: 8.5;
+}
+
+.search {
+    margin: 10px;
+    padding-bottom: 20px;
+    /*justify-content: center;*/
+    width: auto;
+    display: flex;
+}
+
+.input-search {
+    border: 1px solid gray;
+    border-radius: 5px;
+    outline: none;
+    padding: 0px 10px 0px 10px;
+    width: 40%;
+    height: 38px;
+}
+
+.btn-blue {
+    border: none;
+    height: 2.5rem;
+    margin-left: 10px;
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    /*display: inline-block;*/
+    background-color: #0066cc;
+    color: white;
+}
+
+.btn-gray:hover {
+    background-color: #004c99;
+    color: white !important;
+}
+
+.dropdown {
+    margin-left: 10px;
+}
+
+.img {
+    width: 50%;
+}
+
+td, th {
+    border: 1px solid darkgray;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table {
+    width: auto;
+    margin: 10px;
+}
