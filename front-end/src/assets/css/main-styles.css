@@ -1,8 +1,7 @@
 .left {
     flex: 1.5;
     min-width: 180px;
-    background-color: #003366;
-
+    background-color: #0f172a;
 }
 
 .fixed-nav {
@@ -13,42 +12,45 @@
 
 .nav-branch {
     font-weight: bold;
-    color: white;
-    padding: 10px 20px 10px 20px;
-    /*margin: 10px 20px 10px 20px;;*/
-    border-bottom: 1px solid #004c99;
+    color: lightgray;
+    padding: 10px 10px 10px 10px;
+    border-radius: 5px;
+    margin: 10px;
 }
 
 .type {
     font-weight: normal;
-    color: white;
-    padding-left: 25%;
+    color: lightgray;
+    padding: 10px 10px 10px 25%;
+    border-radius: 5px;
+    margin: 10px;
+    /*padding-left: 25%;*/
     /*display: block;*/
 }
 
 .nav-branch:hover {
-    color: gold;
-    background-color: #004c99;
+    color: white;
+    background-color: #2c3344;
 }
 
 .nav-branch:focus {
-    color: gold;
-    background-color: #004c99;
+    color: white;
+    background-color: #2c3344;
 }
 
 .nav-branch-focus {
-    color: gold;
-    background-color: #004c99;
+    color: white;
+    background-color: #2c3344;
 }
 
 .type:hover {
-    color: gold;
-    background-color: #004c99;
+    color: white;
+    background-color: #2c3344;
 }
 
 .type:focus {
-    color: gold;
-    background-color: #004c99;
+    color: white;
+    background-color: #2c3344;
 }
 
 .right {
@@ -76,11 +78,7 @@
     border: none;
     height: 2.5rem;
     margin-left: 10px;
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*justify-content: center;*/
-    /*display: inline-block;*/
-    background-color: #0066cc;
+    /*background-color: #0066cc;*/
     color: white;
 }
 
@@ -103,7 +101,12 @@ td, th {
     vertical-align: middle;
 }
 
-.table {
+.base-table {
     width: auto;
     margin: 10px;
+}
+
+tbody tr:hover {
+    background-color: lightgray;
+    cursor: pointer;
 }
