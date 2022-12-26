@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import '../assets/css/login-styles.css'
+import '../../assets/css/login-styles.css'
 import { FaUser, FaLock } from 'react-icons/fa'
 import axios from "axios";
+import {apiLogin} from "../url";
 
 class LoginForm extends Component {
     constructor(props) {
@@ -44,11 +45,12 @@ class LoginForm extends Component {
 
     handleSubmit = event => {
         event.preventDefault()
-        axios.post('https://park-type.herokuapp.com/api/authen/login', this.state)
+        axios.post(apiLogin , this.state)
             .then(response => {
                 console.log(response)
                 if (response.data.login) {
                     window.open('/', '_self')
+                    localStorage.setItem('token', response.data.token)
                 }
             })
             .catch(error => {

@@ -1,6 +1,6 @@
 import './App.css';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import LoginForm from "./page/LoginForm";
+import LoginForm from "./components/login/LoginForm";
 import Navbar from "./components/Navbar";
 import ListProduct from "./components/product/ListProduct";
 import ListEmployee from "./components/employee/ListEmployee";
