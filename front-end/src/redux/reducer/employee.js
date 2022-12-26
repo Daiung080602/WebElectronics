@@ -10,6 +10,7 @@ export default createSlice({
         listEmployee: [],
         form: {
             id: '',
+            password: '',
             fullname: '',
             phone: '',
             office: '',

@@ -14,6 +14,7 @@ function ModalInfoEmployee(props) {
         if (props.type === "add") {
             dispatch(employee.actions.formChange({
                 id: '',
+                password: '',
                 fullname: '',
                 phone: '',
                 office: '',

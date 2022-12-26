@@ -26,6 +26,7 @@ function EmployeeForm(props) {
         setForm(initForm)
         if (props.type !== "add") {
             document.getElementById("id").disabled = true
+            document.getElementById("password").disabled = true
         }
     }, [])
 
@@ -34,6 +35,15 @@ function EmployeeForm(props) {
             setForm({
                 ...form,
                 id: e.target.value
+            })
+        }
+    }
+
+    const changePassword = (e) => {
+        if (props.type === "add") {
+            setForm({
+                ...form,
+                password: e.target.value
             })
         }
     }
@@ -223,6 +233,17 @@ function EmployeeForm(props) {
                     placeholder={"8 chữ số"}
                     value={form.id}
                     onChange={changeMSV}
+                />
+                <Form.Text id={"id-warning"} className="text-danger"></Form.Text>
+            </Form.Group>
+
+            <Form.Group className={"mb-3"}>
+                <Form.Label>Mật khẩu</Form.Label>
+                <Form.Control
+                    id={"password"}
+                    type={"password"}
+                    value={form.password}
+                    onChange={changePassword}
                 />
                 <Form.Text id={"id-warning"} className="text-danger"></Form.Text>
             </Form.Group>
