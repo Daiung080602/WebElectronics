@@ -2,6 +2,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db
+from flask_login import UserMixin, LoginManager
+
+login = LoginManager()
     
 class Office(db.Model):
     id = Column(String(50), primary_key=True)
@@ -14,7 +17,7 @@ class Office(db.Model):
     def __str__(self):
         return f'Office ({self.id})'
     
-class Employee(db.Model):
+class Employee(UserMixin, db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
@@ -22,8 +25,8 @@ class Employee(db.Model):
     fullname = Column(String(50), nullable=False)
     phone = Column(String(15))
     address = Column(Text)
-    right = Column(String(50))
-    office_id = Column(String(50), ForeignKey(Office.id), nullable=False)
+    role = Column(Integer)
+    office_id = Column(String(50), ForeignKey(Office.id))
     
     def __str__(self):
         return f'Employee ({self.id}, {self.fullname})'
@@ -31,6 +34,10 @@ class Employee(db.Model):
         self.password = generate_password_hash(password=password)
     def check_psw(self, password):
         return check_password_hash(self.password, password)
+    
+@login.user_loader
+def load_user(id):
+    return Employee.query.get(int(id))
 
 class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
