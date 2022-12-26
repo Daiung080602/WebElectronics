@@ -1,0 +1,1 @@
+export const apiEmployee = 'https://637cfc2a16c1b892ebc4d885.mockapi.io/api/employees'
