@@ -26,3 +26,47 @@ export const listEmployeeRemainingSelector = createSelector(
             && employee.role === filter.role
     })
 })
+
+// productline
+export const filterProductSelector = (state) => state.product.filter
+export const listProductSelector = (state) => state.product.listProduct
+export const infoProductSelector = (state) => state.product.form
+
+export const listProductSelectedSelector = createSelector(
+    listProductSelector,
+    (list) => {
+        return list.filter((product) => {
+            return product.selected
+        })
+    }
+)
+
+export const listProductRemainingSelector = createSelector(
+    listProductSelector,
+    filterProductSelector,
+    (list, filter) => {
+        return list.filter((product) => {
+            let filterSearch = product.name.includes(filter.searchText)
+            let filterCatalog
+            let filterWarantyPeriod
+            if (filter.catalog === 'Danh mục' || filter.catalog === "Tất cả") {
+                filterCatalog = true
+            } else {
+                filterCatalog = product.catalog === filter.catalog
+            }
+            switch (filter.warrantyPeriod) {
+                case "0-6 tháng":
+                    filterWarantyPeriod = product.warrantyPeriod > 0 && product.warrantyPeriod <= 6
+                    break
+                case "6-12 tháng":
+                    filterWarantyPeriod = product.warrantyPeriod > 6 && product.warrantyPeriod <= 12
+                    break
+                case "Lớn hơn 1 năm":
+                    filterWarantyPeriod = product.warrantyPeriod > 12
+                    break
+                default:
+                    filterWarantyPeriod = true
+            }
+            return filterSearch && filterCatalog && filterWarantyPeriod
+        })
+    })

@@ -1,12 +1,11 @@
 import {configureStore} from "@reduxjs/toolkit";
 import employee from "./reducer/employee";
-
-// import listEmployeeSlice from "./reducer/employee/listEmployeeSlice"
-// import filterSlice from "./reducer/employee/filterSlice";
+import product from "./reducer/product";
 
 const store = configureStore({
     reducer: {
-        employee: employee.reducer
+        employee: employee.reducer,
+        product: product.reducer
     },
 })
 
