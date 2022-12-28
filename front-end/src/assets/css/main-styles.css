@@ -110,3 +110,27 @@ tbody tr:hover {
     background-color: lightgray;
     cursor: pointer;
 }
+
+.img-box {
+    margin-top: 20px;
+    border: darkgray dashed 2px;
+    padding: 2px;
+    min-height: 100px;
+}
+
+.img-product {
+    width: 20%;
+    aspect-ratio: 1 / 1;
+    display: inline;
+    padding: 2px;
+}
+
+.img-product:hover {
+    border: dimgray 1px solid;
+}
+
+.no-img {
+    width: 50%;
+    justify-content: center;
+    align-items: center;
+}

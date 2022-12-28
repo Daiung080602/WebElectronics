@@ -5,7 +5,7 @@ import TableEmployee from "./TableEmployee";
 import {useDispatch, useSelector} from "react-redux";
 import employee from "../../redux/reducer/employee";
 import ModalInfoEmployee from "./ModalInfoEmployee";
-import {listEmployeeSelectedSelector, listEmployeeSelector} from "../../redux/selector";
+import {listEmployeeSelectedSelector} from "../../redux/selector";
 import axios from "axios";
 import {apiEmployee} from "../url";
 
@@ -41,7 +41,6 @@ function ListEmployee() {
         if (listSelected.length !== 0) {
             setShow(true)
         }
-        console.log(listSelected)
     }
 
     const clickOKDelete = () => {
@@ -125,8 +124,9 @@ function ListEmployee() {
                 <Modal.Body>
                     {
                         isDeleting ?
-                            <div className="spinner-border m-5" role="status">
-                                <span className="visually-hidden"/> Đang xóa
+                            <div className="m-3 text-center fs-3">
+                                <span className="spinner-border" role="status"/>
+                                &nbsp;Đang xóa
                             </div> : status
                     }
                 </Modal.Body>

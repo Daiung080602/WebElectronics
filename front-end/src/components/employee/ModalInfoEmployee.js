@@ -18,8 +18,7 @@ function ModalInfoEmployee(props) {
                 fullname: '',
                 phone: '',
                 office: '',
-                role: 'Admin',
-                status: true
+                role: 'Admin'
             }))
         } else {
             dispatch(employee.actions.formChange(props.info))

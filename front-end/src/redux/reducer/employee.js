@@ -14,8 +14,7 @@ export default createSlice({
             fullname: '',
             phone: '',
             office: '',
-            role: 'Admin',
-            status: true,
+            role: 'Admin'
         }
     },
     reducers: {

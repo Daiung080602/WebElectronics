@@ -14,7 +14,7 @@ function EmployeeForm(props) {
 
     const initForm = useSelector(infoEmployeeSelector)
     const listEmployee = useSelector(listEmployeeSelector)
-    const listRole = ['Admin', 'Quản lý đại lý', 'Quản lý cơ sở sản xuất', 'Quản lý cơ sở bảo hành', 'Nhân viên']
+    const listRole = ['Admin', 'Đại lý', 'Cơ sở sản xuất', 'Cơ sở bảo hành']
 
     const dispatch = useDispatch()
 
@@ -30,7 +30,7 @@ function EmployeeForm(props) {
         }
     }, [])
 
-    const changeMSV = (e) => {
+    const changeId = (e) => {
         if (props.type === "add") {
             setForm({
                 ...form,
@@ -69,10 +69,10 @@ function EmployeeForm(props) {
         })
     }
 
-    const changeActive = (e) => {
+    const changeRole = (e) => {
         setForm({
             ...form,
-            status: e.target.checked
+            role: e.target.value
         })
     }
 
@@ -91,6 +91,35 @@ function EmployeeForm(props) {
             if (employee !== undefined) {
                 return "Mã nhân viên này đã tồn tại"
             }
+        }
+        return "Yes"
+    }
+
+    function checkPassword() {
+        let password = form.password
+        if (password.length === 0) {
+            return "Bạn chưa nhập mật khẩu"
+        }
+        if (password.length < 8) {
+            return "Mật khẩu phải gồm tối thiểu 8 ký tự"
+        }
+        let checkUpperCase = false
+        let checkLowerCase = false
+        let checkNumber = false
+        for (let i = 0; i < password.length; i++) {
+            if (!isNaN(password[i])) {
+                checkNumber = true
+            }
+            if (password[i] >= 'A' && password[i] < 'Z') {
+                checkUpperCase = true
+
+            }
+            if (password[i] >= 'a' && password[i] < 'z') {
+                checkLowerCase = true
+            }
+        }
+        if (!(checkNumber && checkUpperCase && checkLowerCase)) {
+            return "Mật khẩu phải gồm chữ hoa, chữ thường và số"
         }
         return "Yes"
     }
@@ -132,6 +161,12 @@ function EmployeeForm(props) {
             document.getElementById("id-warning").innerText = checkId()
         } else {
             document.getElementById("id-warning").innerText = ""
+        }
+        if (checkPassword() !== "Yes") {
+            success = false
+            document.getElementById("password-warning").innerText = checkPassword()
+        } else {
+            document.getElementById("password-warning").innerText = ''
         }
         if (checkFullname() !== "Yes") {
             success = false
@@ -232,9 +267,9 @@ function EmployeeForm(props) {
                     type={"text"}
                     placeholder={"8 chữ số"}
                     value={form.id}
-                    onChange={changeMSV}
+                    onChange={changeId}
                 />
-                <Form.Text id={"id-warning"} className="text-danger"></Form.Text>
+                <Form.Text id={"id-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -245,7 +280,7 @@ function EmployeeForm(props) {
                     value={form.password}
                     onChange={changePassword}
                 />
-                <Form.Text id={"id-warning"} className="text-danger"></Form.Text>
+                <Form.Text id={"password-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -255,7 +290,7 @@ function EmployeeForm(props) {
                     value={form.fullname}
                     onChange={changeFullname}
                 />
-                <Form.Text id={"fullname-warning"} className="text-danger"></Form.Text>
+                <Form.Text id={"fullname-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -265,7 +300,7 @@ function EmployeeForm(props) {
                     value={form.phone}
                     onChange={changePhone}
                 />
-                <Form.Text id={"phone-warning"} className="text-danger"></Form.Text>
+                <Form.Text id={"phone-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -275,22 +310,17 @@ function EmployeeForm(props) {
                     value={form.office}
                     onChange={changeOffice}
                 />
-                <Form.Text id={"office-warning"} className="text-danger"></Form.Text>
+                <Form.Text id={"office-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
                 <Form.Label>Chức vụ</Form.Label>
-                <select className="form-select" aria-label="Chức vụ">
+                <select className="form-select" aria-label="Chức vụ" value={form.role} onChange={changeRole}>
                     {
                         listRole.length ? listRole.map((role) => (
                             <option key={role} value={role}>{role}</option>)) : null
                     }
                 </select>
-            </Form.Group>
-
-
-            <Form.Group className={"mb-3"}>
-                <Form.Check type={"checkbox"} label={"active"} checked={form.status} onClick={changeActive}/>
             </Form.Group>
 
             <div className={"d-flex flex-row-reverse"}>
