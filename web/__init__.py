@@ -3,6 +3,7 @@ import os
 from web.Extension.models import db
 from web.Extension.admin import admin
 from web.Extension.ma import ma
+from flask_cors import CORS
 
 
 def create_db(app):
@@ -14,13 +15,17 @@ def create_db(app):
 
 def create_app(config_file='config.py'):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_pyfile(config_file)
 
-    from web.Auth.controller import auth
+    from web.Controller.Auth.controller import auth
     app.register_blueprint(auth)
 
-    from web.Employees.controller import employees
+    from web.Controller.Employees import employees
     app.register_blueprint(employees)
+
+    from web.Controller.Product import products
+    app.register_blueprint(products)
 
     db.init_app(app)
     create_db(app)
