@@ -15,7 +15,7 @@ def get_all_products(current_user):
     if role == 2:
         product = Product.query.filter_by(Product.office_id.any(Office.category == 1)).all()
     if role == 3:
-        product = Product.query.filter_by(Employee.office_id.any(Office.category == 2)).all()
+        product = Product.query.filter_by(Product.office_id.any(Office.category == 2)).all()
     if role == 4:
         product = Product.query.filter_by(Employee.office_id.any(Office.category == 3)).all()
     return products_schema.jsonify(product)

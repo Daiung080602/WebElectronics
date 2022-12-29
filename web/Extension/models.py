@@ -20,10 +20,10 @@ class Office(db.Model):
 class Employee(db.Model):
     id = Column(String(8), primary_key=True)
     password = Column(String(200), nullable=False)
-    avatar = Column(Text)
+    avatar = Column(Text)  # k can
     fullname = Column(String(50))
     phone = Column(String(10))
-    address = Column(Text)
+    address = Column(Text)  # k can
     role = Column(Integer)  # 1: giam doc, 2: agent(dai ly), 3: cssx -manu, 4: bao hanh: wranty, 5: nhan vien
     office_id = Column(String(50), ForeignKey(Office.id))
 
@@ -35,18 +35,6 @@ class Employee(db.Model):
 
     def check_psw(self, password):
         return check_password_hash(self.password, password)
-
-    def change_value(self, key, value):
-        if key == 'fullname':
-            self.fullname = value
-        if key == 'phone':
-            self.phone = value
-        if key == 'address':
-            self.address = value
-        if key == 'role':
-            self.role = value
-        if key == 'office_id':
-            self.office_id = value
 
 
 class Customer(db.Model):

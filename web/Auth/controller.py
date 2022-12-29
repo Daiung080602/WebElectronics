@@ -2,7 +2,7 @@ import jwt
 from flask import request, current_app, jsonify
 from marshmallow import ValidationError
 
-from web.Employees import employee_schema
+from web.Employees import employee_login_schema
 from web.Auth import auth
 from web.Extension.models import Employee
 from web.Middleware.check_auth import token_required
@@ -15,13 +15,13 @@ def login():
 
         # validate data
         try:
-            data = employee_schema.load(json_input)
+            data = employee_login_schema.load(json_input)
         except ValidationError as err:
             return {"error": err.messages}, 400
 
         # Use get to see if employee already exists
-        employee = Employee.query.filter_by(password=data["password"], id=data['id']).first()
-        if employee is None:
+        employee = Employee.query.filter_by(id=data['id']).first()
+        if employee is None or not employee.check_psw(data['password']):
             return {"error": "That employee does not exist"}, 400
         else:
             try:
@@ -30,7 +30,7 @@ def login():
                     {"employee_id": employee.id},
                     current_app.config["SECRET_KEY"]
                 )
-                resp = jsonify({"token": token})
+                resp = jsonify({"token": token, "role": employee.role})
                 resp.set_cookie("access-token", token)
                 resp.status_code = 201
                 return resp
@@ -43,7 +43,7 @@ def login():
 @auth.route('/logout', methods=['GET'])
 @token_required
 def logout(user):
-    resp = jsonify({})
+    resp = jsonify({"message": "success"})
     resp.set_cookie("access-token", '', expires=0)
-    resp.status_code = 201
+    resp.status_code = 200
     return resp

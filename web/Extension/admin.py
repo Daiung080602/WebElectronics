@@ -10,7 +10,7 @@ class AdminView(ModelView):
         self.form_columns = self.column_list
         super(AdminView, self).__init__(model, *args, **kwargs)
 
-    page_size = 10
+    page_size = 20
     column_display_pk = True
 
 
