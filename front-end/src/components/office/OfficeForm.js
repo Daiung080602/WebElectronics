@@ -2,19 +2,19 @@ import {useEffect, useState} from "react";
 import {Button, Dropdown, Form} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import {useDispatch, useSelector} from "react-redux";
-import {infoEmployeeSelector, listEmployeeSelector} from "../../redux/selector";
-import employee from "../../redux/reducer/employee";
+import {infoOfficeSelector, listOfficeSelector} from "../../redux/selector";
 import axios from "axios";
-import {apiEmployee} from "../url";
+import {apiOffice} from "../url";
+import office from "../../redux/reducer/office";
 
-function EmployeeForm(props) {
+function OfficeForm(props) {
     const [show, setShow] = useState(false)
     const [status, setStatus] = useState('')
     const [form, setForm] = useState({})
 
-    const initForm = useSelector(infoEmployeeSelector)
-    const listEmployee = useSelector(listEmployeeSelector)
-    const listRole = ['Admin', 'Đại lý', 'Cơ sở sản xuất', 'Cơ sở bảo hành']
+    const initForm = useSelector(infoOfficeSelector)
+    const listOffice = useSelector(listOfficeSelector)
+    const listType = ['Đại lý', 'Cơ sở sản xuất', 'Cơ sở bảo hành']
 
     const dispatch = useDispatch()
 
@@ -26,32 +26,20 @@ function EmployeeForm(props) {
         setForm(initForm)
         if (props.type !== "add") {
             document.getElementById("id").disabled = true
-            document.getElementById("password").disabled = true
         }
     }, [])
 
     const changeId = (e) => {
-        if (props.type === "add") {
-            setForm({
-                ...form,
-                id: e.target.value
-            })
-        }
-    }
-
-    const changePassword = (e) => {
-        if (props.type === "add") {
-            setForm({
-                ...form,
-                password: e.target.value
-            })
-        }
-    }
-
-    const changeFullname = (e) => {
         setForm({
             ...form,
-            fullname: e.target.value
+            id: e.target.value
+        })
+    }
+
+    const changeName = (e) => {
+        setForm({
+            ...form,
+            name: e.target.value
         })
     }
 
@@ -62,74 +50,49 @@ function EmployeeForm(props) {
         })
     }
 
-    const changeOffice = (e) => {
+    const changeAddress = (e) => {
         setForm({
             ...form,
-            office: e.target.value
+            address: e.target.value
         })
     }
 
-    const changeRole = (e) => {
+    const changeManager = (e) => {
         setForm({
             ...form,
-            role: e.target.value
+            manager: e.target.value
+        })
+    }
+
+    const changeType = (e) => {
+        setForm({
+            ...form,
+            type: e.target.value
         })
     }
 
     function checkId() {
         let id = form.id
         if (id.length === 0) {
-            return "Bạn chưa nhập mã nhân viên"
-        }
-        if (id.length !== 8 || isNaN(id)) {
-            return "Mã nhân viên phải là 8 chữ số"
+            return "Bạn chưa nhập mã cơ sở"
         }
         if (props.type === "add") {
-            let employee = listEmployee.find(function (e) {
+            let office = listOffice.find(function (e) {
                 return e.id === id
             })
-            if (employee !== undefined) {
-                return "Mã nhân viên này đã tồn tại"
+            if (office !== undefined) {
+                return "Cơ sở này đã tồn tại"
             }
         }
         return "Yes"
     }
 
-    function checkPassword() {
-        let password = form.password
-        if (password.length === 0) {
-            return "Bạn chưa nhập mật khẩu"
+    function checkName() {
+        if (form.name.length === 0) {
+            return "Bạn chưa nhập tên cơ sở"
         }
-        if (password.length < 8) {
-            return "Mật khẩu phải gồm tối thiểu 8 ký tự"
-        }
-        let checkUpperCase = false
-        let checkLowerCase = false
-        let checkNumber = false
-        for (let i = 0; i < password.length; i++) {
-            if (!isNaN(password[i])) {
-                checkNumber = true
-            }
-            if (password[i] >= 'A' && password[i] < 'Z') {
-                checkUpperCase = true
-
-            }
-            if (password[i] >= 'a' && password[i] < 'z') {
-                checkLowerCase = true
-            }
-        }
-        if (!(checkNumber && checkUpperCase && checkLowerCase)) {
-            return "Mật khẩu phải gồm chữ hoa, chữ thường và số"
-        }
-        return "Yes"
-    }
-
-    function checkFullname() {
-        if (form.fullname.length === 0) {
-            return "Bạn chưa nhập họ tên"
-        }
-        if (form.fullname.length > 100) {
-            return "Họ tên không được có độ dài quá 100 ký tự"
+        if (form.name.length > 100) {
+            return "Tên cơ sở không được có độ dài quá 100 ký tự"
         }
         return "Yes"
     }
@@ -144,12 +107,22 @@ function EmployeeForm(props) {
         return "Yes"
     }
 
-    function checkOffice() {
-        if (form.office.length === 0) {
+    function checkAddress() {
+        if (form.address.length === 0) {
             return "Bạn chưa nhập địa chỉ"
         }
-        if (form.office.length > 100) {
+        if (form.address.length > 100) {
             return "Địa chỉ không được có độ dài quá 100 ký tự"
+        }
+        return "Yes"
+    }
+
+    function checkManager() {
+        if (form.manager.length === 0) {
+            return "Bạn chưa nhập tên người quản lý"
+        }
+        if (form.manager.length > 100) {
+            return "Tên người quản lý không được có độ dài quá 100 ký tự"
         }
         return "Yes"
     }
@@ -162,17 +135,11 @@ function EmployeeForm(props) {
         } else {
             document.getElementById("id-warning").innerText = ""
         }
-        if (checkPassword() !== "Yes") {
+        if (checkName() !== "Yes") {
             success = false
-            document.getElementById("password-warning").innerText = checkPassword()
+            document.getElementById("name-warning").innerText = checkName()
         } else {
-            document.getElementById("password-warning").innerText = ''
-        }
-        if (checkFullname() !== "Yes") {
-            success = false
-            document.getElementById("fullname-warning").innerText = checkFullname()
-        } else {
-            document.getElementById("fullname-warning").innerText = ""
+            document.getElementById("name-warning").innerText = ""
         }
         if (checkPhone() !== "Yes") {
             success = false
@@ -180,18 +147,23 @@ function EmployeeForm(props) {
         } else {
             document.getElementById("phone-warning").innerText = ""
         }
-        if (checkOffice() !== "Yes") {
+        if (checkAddress() !== "Yes") {
             success = false
-            document.getElementById("office-warning").innerText = checkOffice()
+            document.getElementById("address-warning").innerText = checkAddress()
         } else {
-            document.getElementById("office-warning").innerText = ""
+            document.getElementById("address-warning").innerText = ""
         }
-
+        if (checkManager()!== "Yes") {
+            success = false
+            document.getElementById("manager-warning").innerText = checkManager()
+        } else {
+            document.getElementById("manager-warning").innerText = ''
+        }
         if (success) {
             let token = localStorage.getItem('token')
             console.log(form)
             if (props.type === "add") {
-                axios.post(apiEmployee, form)
+                axios.post(apiOffice, form)
                     .then(response => {
                         if (response.status === 201) {
                             console.log(response)
@@ -216,7 +188,7 @@ function EmployeeForm(props) {
                         setShow(true)
                     })
             } else {
-                axios.put(apiEmployee + "/" + form.id, form)
+                axios.put(apiOffice + "/" + form.id, form)
                     .then(response => {
                         if (response.status === 200) {
                             console.log(response)
@@ -246,12 +218,13 @@ function EmployeeForm(props) {
 
     const clickCancel = () => {
         setForm(initForm)
+        props.show(false)
     }
 
     useEffect(() => {
-        axios.get(apiEmployee)
+        axios.get(apiOffice)
             .then(response => {
-                dispatch(employee.actions.setListEmployee(response.data))
+                dispatch(office.actions.setListOffice(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -261,11 +234,10 @@ function EmployeeForm(props) {
     return (
         <Form>
             <Form.Group className={"mb-3"}>
-                <Form.Label>Mã nhân viên</Form.Label>
+                <Form.Label>Mã cơ sở</Form.Label>
                 <Form.Control
                     id={"id"}
                     type={"text"}
-                    placeholder={"8 chữ số"}
                     value={form.id}
                     onChange={changeId}
                 />
@@ -273,24 +245,13 @@ function EmployeeForm(props) {
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
-                <Form.Label>Mật khẩu</Form.Label>
-                <Form.Control
-                    id={"password"}
-                    type={"password"}
-                    value={form.password}
-                    onChange={changePassword}
-                />
-                <Form.Text id={"password-warning"} className="text-danger"/>
-            </Form.Group>
-
-            <Form.Group className={"mb-3"}>
-                <Form.Label>Họ và tên</Form.Label>
+                <Form.Label>Tên cơ sở</Form.Label>
                 <Form.Control
                     type={"text"}
-                    value={form.fullname}
-                    onChange={changeFullname}
+                    value={form.name}
+                    onChange={changeName}
                 />
-                <Form.Text id={"fullname-warning"} className="text-danger"/>
+                <Form.Text id={"name-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -307,18 +268,28 @@ function EmployeeForm(props) {
                 <Form.Label>Địa chỉ</Form.Label>
                 <Form.Control
                     type={"text"}
-                    value={form.office}
-                    onChange={changeOffice}
+                    value={form.address}
+                    onChange={changeAddress}
                 />
-                <Form.Text id={"office-warning"} className="text-danger"/>
+                <Form.Text id={"address-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
-                <Form.Label>Chức vụ</Form.Label>
-                <select className="form-select" aria-label="Chức vụ" value={form.role} onChange={changeRole}>
+                <Form.Label>Tên người quản lý</Form.Label>
+                <Form.Control
+                    type={"text"}
+                    value={form.manager}
+                    onChange={changeManager}
+                />
+                <Form.Text id={"manager-warning"} className="text-danger"/>
+            </Form.Group>
+
+            <Form.Group className={"mb-3"}>
+                <Form.Label>Loại cơ sở</Form.Label>
+                <select className="form-select" aria-label="Loại" value={form.type} onChange={changeType}>
                     {
-                        listRole.length ? listRole.map((role) => (
-                            <option key={role} value={role}>{role}</option>)) : null
+                        listType.length ? listType.map((type) => (
+                            <option key={type} value={type}>{type}</option>)) : null
                     }
                 </select>
             </Form.Group>
@@ -361,4 +332,4 @@ function EmployeeForm(props) {
     )
 }
 
-export default EmployeeForm
+export default OfficeForm

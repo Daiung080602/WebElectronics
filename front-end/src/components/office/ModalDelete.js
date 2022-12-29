@@ -1,14 +1,14 @@
-import {Component, useState} from "react";
+import {useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 import {FaRegTrashAlt} from "react-icons/fa";
 import axios from "axios";
-import {apiEmployee} from "../url";
+import {apiEmployee, apiProduct} from "../url";
 import {useDispatch} from "react-redux";
-import employee from "../../redux/reducer/employee";
+import product from "../../redux/reducer/product";
 
 function ModalDelete(props) {
     const [show, setShow] = useState(false)
-    const [status, setStatus] = useState("Bạn muốn xóa nhân viên có mã " + props.id + "?")
+    const [status, setStatus] = useState("Bạn muốn xóa cơ sở có mã " + props.id + "?")
 
     const dispatch = useDispatch()
 
@@ -18,9 +18,9 @@ function ModalDelete(props) {
 
     const handleModalHide = () => {
         setShow(false)
-        axios.get(apiEmployee)
+        axios.get(apiProduct)
             .then(response => {
-                dispatch(employee.actions.setListEmployee(response.data))
+                dispatch(product.actions.setListProduct(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -28,7 +28,7 @@ function ModalDelete(props) {
     }
 
     const clickDelete = () => {
-        axios.delete(apiEmployee + "/" + props.id)
+        axios.delete(apiProduct + "/" + props.id)
             .then(response => {
                 setStatus(response.data.status)
             })
@@ -52,7 +52,7 @@ function ModalDelete(props) {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Xóa nhân viên</Modal.Title>
+                    <Modal.Title>Xóa cơ sở</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {status}

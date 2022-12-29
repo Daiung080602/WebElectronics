@@ -1,10 +1,10 @@
-import {Component, useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
-import EmployeeForm from "./EmployeeForm";
+import {useState} from "react";
+import {Button, Modal} from "react-bootstrap";
 import {useDispatch} from "react-redux";
-import employee from "../../redux/reducer/employee";
+import office from "../../redux/reducer/office";
+import OfficeForm from "./OfficeForm";
 
-function ModalInfoEmployee(props) {
+function ModalInfoOffice(props) {
     const [show, setShow] = useState(false);
 
     const dispatch = useDispatch()
@@ -12,16 +12,16 @@ function ModalInfoEmployee(props) {
     const clickButton = (e) => {
         setShow(true)
         if (props.type === "add") {
-            dispatch(employee.actions.formChange({
+            dispatch(office.actions.formChange({
                 id: '',
-                password: '',
-                fullname: '',
+                name: '',
                 phone: '',
-                office: '',
-                role: 'Admin'
+                address: '',
+                manager: '',
+                type: 'Đại lý'
             }))
         } else {
-            dispatch(employee.actions.formChange(props.info))
+            dispatch(office.actions.formChange(props.info))
         }
     }
 
@@ -54,9 +54,10 @@ function ModalInfoEmployee(props) {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EmployeeForm
+                    <OfficeForm
                         info={props.info}
                         type={props.type}
+                        show={setShow}
                     />
                 </Modal.Body>
             </Modal>
@@ -64,4 +65,4 @@ function ModalInfoEmployee(props) {
     )
 }
 
-export default ModalInfoEmployee
+export default ModalInfoOffice

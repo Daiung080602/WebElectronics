@@ -6,6 +6,7 @@ from web.Employees import employee_login_schema
 from web.Auth import auth
 from web.Extension.models import Employee
 from web.Middleware.check_auth import token_required
+from flask_cors import cross_origin
 
 
 @auth.route('/login', methods=['POST'])
@@ -41,6 +42,7 @@ def login():
 
 
 @auth.route('/logout', methods=['GET'])
+@cross_origin
 @token_required
 def logout(user):
     resp = jsonify({"message": "success"})
