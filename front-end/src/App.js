@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Routes, Navigate} from "react-router-dom";
 import LoginForm from "./components/login/LoginForm";
 import Navbar from "./components/Navbar";
 import ListProduct from "./components/productline/ListProduct";
@@ -8,8 +8,7 @@ import ListOffice from "./components/office/ListOffice";
 import {Provider} from "react-redux";
 
 import store from "./redux/store"
-import ProductForm from "./components/productline/ProductForm";
-import ModalInfoProduct from "./components/productline/ModalInfoProduct";
+import Home from "./components/Home";
 
 function App() {
   return (
@@ -17,18 +16,22 @@ function App() {
           <div>
               <BrowserRouter>
                   <Routes>
-                      {/*<Route path={"/"} element={<ModalInfoProduct type={"add"}/>}/>*/}
                       <Route path={"/login"} element={<LoginForm/>}></Route>
+                      <Route path={"/admin/products"}
+                             element={<Home
+                                 role={"admin"}
+                                 element={<ListProduct/>}/>}/>
+                      <Route path={"/admin/employees"}
+                             element={<Home
+                                 role={"admin"}
+                                 element={<ListEmployee/>}/>}/>
+                      <Route path={"/admin/offices"}
+                             element={
+                                 <Home
+                                     role={"admin"}
+                                     element={<ListOffice/>}/>}/>
+                      <Route path={"/"} element={<Navigate replace to={"/login"}/>}/>
                   </Routes>
-                  <div className="d-flex">
-                      <Navbar role={"admin"}/>
-                      <Routes>
-                          {/*<Route path={"/"} element={<div className={'right'}>Welcome</div>}/>*/}
-                          <Route path={"/admin/products"} element={<ListProduct/>}/>
-                          <Route path={"/admin/employees"} element={<ListEmployee/>}/>
-                          <Route path={"/admin/offices"} element={<ListOffice/>}/>
-                      </Routes>
-                  </div>
               </BrowserRouter>
           </div>
       </Provider>

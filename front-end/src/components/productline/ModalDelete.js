@@ -52,7 +52,7 @@ function ModalDelete(props) {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Xóa sinh viên</Modal.Title>
+                    <Modal.Title>Xóa dòng sản phẩm</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {status}

@@ -17,8 +17,10 @@ function ProductForm(props) {
     const [imagesFile, setImagesFile] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const [changeImg, setChangeImg] = useState(false)
+
     const initForm = useSelector(infoProductSelector)
-    const listEmployee = useSelector(listProductSelector)
+    const listProduct = useSelector(listProductSelector)
 
     const dispatch = useDispatch()
 
@@ -37,6 +39,8 @@ function ProductForm(props) {
         setImages(initForm.image)
         if (props.type !== "add") {
             document.getElementById("name").disabled = true
+        } else {
+            setChangeImg(false)
         }
     }, [])
 
@@ -65,7 +69,9 @@ function ProductForm(props) {
                 }
                 reader.readAsDataURL(file)
             })
-
+            if (props.type === "edit") {
+                setChangeImg(true)
+            }
         }
 
     }
@@ -95,11 +101,19 @@ function ProductForm(props) {
         if (form.name.length === 0) {
             return "Bạn chưa nhập tên dòng sản phẩm"
         }
+        if (props.type === 'add') {
+            let product = listProduct.find(function (e) {
+                return e.name === form.name
+            })
+            if (product !== undefined) {
+                return "Dòng sản phẩm này đã tồn tại"
+            }
+        }
         return "Yes"
     }
 
     function checkImage() {
-        if (imagesFile.length === 0 || imagesFile.length > 5) {
+        if (images.length === 0 || images.length > 5) {
             return "Bạn chưa chọn ảnh hoặc đã chọn quá 5 ảnh"
         }
         return "Yes"
@@ -179,7 +193,12 @@ function ProductForm(props) {
             document.getElementById("mota-warning").innerText = checkMota()
         }
         if (success) {
-            uploadImage()
+            if (props.type === "edit" && !changeImg) {
+                postOrPut()
+                setLoading(false)
+            } else {
+                uploadImage()
+            }
         }
     }
 

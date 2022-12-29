@@ -58,9 +58,6 @@ function TableEmployee() {
                                    onChange={clickCheckboxRow}/>
                         </td>
                         <td>
-                            <ModalDelete id={employee.id} />
-                        </td>
-                        <td>
                             <ModalInfoEmployee
                                 element={<FaRegEdit/>}
                                 title={"Sửa thông tin nhân viên"}
@@ -68,6 +65,9 @@ function TableEmployee() {
                                 info={employee}
                                 type={"edit"}
                                 />
+                        </td>
+                        <td>
+                            <ModalDelete id={employee.id} />
                         </td>
                         <td>{i + 1}</td>
                         <td>{employee.id}</td>

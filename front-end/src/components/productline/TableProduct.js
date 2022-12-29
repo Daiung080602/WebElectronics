@@ -67,7 +67,7 @@ function TableProduct () {
                                 />
                             </td>
                             <td>
-                                <ModalDelete/>
+                                <ModalDelete id={product.name} />
                             </td>
                             <td>{i + 1}</td>
                             <td>{product.name}</td>
