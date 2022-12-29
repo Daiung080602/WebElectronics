@@ -1,7 +1,7 @@
 from flask import session
 from flask_admin.contrib.sqla import ModelView
-from web.models import Office, Employee, Customer, Product, Management, WarrantyManagement, Transaction, db 
-from .extensions import admin
+from web.Extension.models import Office, Employee, Customer, Product, Management, WarrantyManagement, Transaction
+from web.Extension import admin, db
 
 
 class AdminView(ModelView):
@@ -9,10 +9,7 @@ class AdminView(ModelView):
         self.column_list = [i.key for i in model.__table__.columns]
         self.form_columns = self.column_list
         super(AdminView, self).__init__(model, *args, **kwargs)
-        
-    def is_accessible(self):
-        return 'admin' in session
-    
+
     page_size = 10
     column_display_pk = True
 

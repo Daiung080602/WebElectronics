@@ -1,10 +1,8 @@
 from flask import Flask
 import os
-from web.models import db
-from web.admin import admin
-from web.ma import ma
-from sqlalchemy import create_engine
-from .models import login
+from web.Extension.models import db
+from web.Extension.admin import admin
+from web.Extension.ma import ma
 
 
 def create_db(app):
@@ -12,20 +10,22 @@ def create_db(app):
         with app.app_context():
             db.create_all()
         print("CREATED DATABASE")
+
+
 def create_app(config_file='config.py'):
     app = Flask(__name__)
     app.config.from_pyfile(config_file)
-    
-    from .home.controller import home
-    app.register_blueprint(home)
-    
-    from .auth.controller import auth
+
+    from web.Auth.controller import auth
     app.register_blueprint(auth)
-    
+
+    from web.Employees.controller import employees
+    app.register_blueprint(employees)
+
     db.init_app(app)
-    login.init_app(app)
     create_db(app)
+
     admin.init_app(app)
     ma.init_app(app)
-    
+
     return app
