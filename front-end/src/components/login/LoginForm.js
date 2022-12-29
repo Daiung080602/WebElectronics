@@ -45,12 +45,14 @@ class LoginForm extends Component {
 
     handleSubmit = event => {
         event.preventDefault()
+        console.log(this.state)
         axios.post(apiLogin , this.state)
             .then(response => {
                 console.log(response)
                 if (response.data.login) {
                     window.open('/', '_self')
                     localStorage.setItem('token', response.data.token)
+                    localStorage.setItem('role', response.data.role)
                 }
             })
             .catch(error => {
