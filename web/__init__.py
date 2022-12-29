@@ -16,7 +16,12 @@ def create_db(app):
 def create_app(config_file='config.py'):
     app = Flask(__name__)
     app.config.from_pyfile(config_file)
-    CORS(app)
+    CORS.init_app(
+        app=app,
+        origins='*',
+        methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+        supports_credentials=True
+    )
     from web.Auth.controller import auth
     app.register_blueprint(auth)
 
