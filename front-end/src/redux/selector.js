@@ -70,3 +70,39 @@ export const listProductRemainingSelector = createSelector(
             return filterSearch && filterCatalog && filterWarantyPeriod
         })
     })
+
+// office
+export const filterOfficeSelector = (state) => state.office.filter
+export const listOfficeSelector = (state) => state.office.listOffice
+export const infoOfficeSelector = (state) => state.office.form
+
+export const listOfficeSelectedSelector = createSelector(
+    listOfficeSelector,
+    (list) => {
+        return list.filter((office) => {
+            return office.selected
+        })
+    }
+)
+
+export const listOfficeRemainingSelector = createSelector(
+    listOfficeSelector,
+    filterOfficeSelector,
+    (list, filter) => {
+        return list.filter((office) => {
+            let filterSearch = office.id.includes(filter.searchText) || office.name.includes(filter.searchText)
+            let filterType
+            let filterAddress
+            if (filter.type === 'Loại cơ sở' || filter.type === "Tất cả") {
+                filterType = true
+            } else {
+                filterType = office.type === filter.type
+            }
+            if (filter.address === 'Khu vực' || filter.address === 'Tất cả') {
+                filterAddress = true
+            } else {
+                filterAddress = office.address === filter.address
+            }
+            return filterSearch && filterType && filterAddress
+        })
+    })
