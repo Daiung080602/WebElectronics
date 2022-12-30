@@ -89,7 +89,7 @@ def create_new_office(current_office):
                 db.session.commit()
                 return {"status": "success"}, 201
         else:
-            return {'error': 'dont have permission'}, 400
+            return {'error': 'dont have permission to create new office'}, 400
     except Exception as e:
         return {'error': str(e)}, 500
 
@@ -119,7 +119,7 @@ def update_office(current_office, id):
                 db.session.commit()
                 return {"status": "success"}, 201
         else:
-            return {'error': 'dont have permission'}, 400
+            return {'error': 'dont have permission to change info office'}, 400
     except Exception as e:
         return {'error': str(e)}, 500
 
@@ -138,6 +138,6 @@ def delete_new_office(current_office, id):
                 db.session.commit()
                 return {'status': 'success'}
         else:
-            return {'error': 'dont have permission'}, 400
+            return {'error': 'dont have permission to delete info of office'}, 400
     except Exception as e:
         return {'error': str(e)}, 500

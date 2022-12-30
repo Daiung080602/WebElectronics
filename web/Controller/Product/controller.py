@@ -1,9 +1,57 @@
 from flask import request
 from marshmallow import ValidationError
 
-from web.Controller.Product import Products, product_schema, products_schema
-from web.Extension.models import Product, db, Office, Lot
+from web.Controller.Product import Products, product_schema, products_schema, lots_schema, lot_schema
+from web.Extension.models import db, Office, Lot, Product
 from web.Middleware.check_auth import token_required
+
+
+@Products.route('/api/lots', methods=['GET'])
+@token_required
+def get_all_lots(current_office):
+    try:
+        role = current_office.role
+        if role == 1:
+            lots = Lot.query.all()
+        else:
+            lots = current_office.lots
+
+        return lots_schema.jsonify(lots)
+    except Exception as e:
+        return {'error': str(e)}, 500
+
+
+@Products.route('/api/lots', methods=['POST'])
+@token_required
+def create_new_lot(current_office):
+    try:
+        role = current_office.role
+        if role == 4:
+            json_input = request.get_json()
+
+            # validate data
+            try:
+                data = lot_schema.load(json_input)
+            except ValidationError as err:
+                return {"error": err.messages}, 400
+
+            lot = Lot.query.filter_by(lot_id=data['lot_id']).first()
+            if lot:
+                return {"error": "This lot id already have"}, 400
+            else:
+                new_lot = Lot(**data)
+                for i in range(new_lot.amount):
+                    new_product = Product(state="Mới sản xuất", lot_id=new_lot.lot_id)
+                    db.session.add(new_product)
+                db.session.add(lot)
+                db.session.commit()
+                return {"status": "success"}, 201
+
+        else:
+            return {'error': 'dont have permission create lot'}, 400
+
+    except Exception as e:
+        return {'error': str(e)}, 500
 
 
 @Products.route('/api/products', methods=['GET'])
@@ -12,7 +60,7 @@ def get_all_products(current_office):
     try:
         role = current_office.role
         if role == 1:
-            product = Product.query.all()
+            product = Lot.query.all()
         elif role == 2:
             product = Office.query.filter_by(office_id=current_office.office_id).first().products_agent
         elif role == 3:
@@ -23,21 +71,21 @@ def get_all_products(current_office):
         return {'error': str(e)}, 500
 
 
-@Products.route('/products/<id>', methods=['GET'])
+@Products.route('/api/products/<state>', methods=['GET'])
 @token_required
-def get_product_by_id(current_user, id):
-    product = Product.query.filter_by(product_id=id).first()
+def get_product_by_id(current_office, state):
+    product = Lot.query.filter_by(state=state).all()
     if not product:
-        return {'error': 'dont have employee has this id'}, 400
-    if current_user.role == 1 or current_user.office_id == product.office_id:
+        return {'error': 'dont have employee has this state'}, 400
+    if current_office.role == 1 or current_office.office_id == product.office_id:
         return product_schema.jsonify(product)
     else:
         return {"error": 'dont have employee has this id'}, 400
 
 
-@Products.route('/products/create', methods=['POST'])
+@Products.route('/api/products', methods=['POST'])
 @token_required
-def create_new_product(current_user):
+def create_new_product(current_office):
     try:
         json_input = request.get_json()
 
@@ -47,7 +95,7 @@ def create_new_product(current_user):
         except ValidationError as err:
             return {"error": err.messages}, 400
 
-        employee = Product(**data)
+        employee = Lot(**data)
         employee.set_psw()
 
         db.session.add(employee)
@@ -59,9 +107,9 @@ def create_new_product(current_user):
         return {"error": str(e)}, 500
 
 
-@Products.route('/products/<id>', methods=['PUT'])
+@Products.route('/api/products/<id>', methods=['PUT'])
 @token_required
-def update_product(current_user, id):
+def update_product(current_office, id):
     try:
         json_input = request.get_json()
 
@@ -71,10 +119,10 @@ def update_product(current_user, id):
         except ValidationError as err:
             return {"error": err.messages}, 400
 
-        product = Product.query.filter_by(id=id).first()
+        product = Lot.query.filter_by(id=id).first()
         if not product:
             return {'error': 'dont have employee has this id'}, 400
-        if current_user.role == 1 or current_user.office_id == product.office_id:
+        if current_office.role == 1 or current_office.office_id == product.office_id:
             for key in data.keys():
                 if key != 'id':
                     product.change_value(key, data[key])
@@ -84,16 +132,3 @@ def update_product(current_user, id):
     except Exception as e:
         return {"error": str(e)}, 500
 
-
-@Products.route('/products/<id>', methods=['DELETE'])
-@token_required
-def delete_new_product(current_user, id):
-    product = Product.query.filter_by(id=id).first()
-    if not product:
-        return {'error': 'dont have employee has this id'}, 400
-    if current_user.role == 1 or current_user.office_id == product.office_id:
-        db.session.delete(product)
-        db.session.commit()
-        return {'message': 'success'}
-    else:
-        return {'error': 'dont have employee has this id'}, 400
