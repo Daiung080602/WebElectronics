@@ -118,7 +118,7 @@ def update_office(current_office, id):
                             and key not in ['office_id', 'role', 'password']:
                         setattr(office, key, value)
                 db.session.commit()
-                return {"status": "success"}, 201
+                return {"status": "success"}, 200
         else:
             return {'error': 'dont have permission to change info office'}, 400
     except Exception as e:

@@ -6,7 +6,7 @@ from web.Middleware.check_auth import token_required
 
 @token_required
 def must_be_in_list_exporter_id(current_office, id):
-    list_office_id = [o.id for o in Office.query.filter_by(role=4)]
+    list_office_id = [o.office_id for o in Office.query.filter_by(role=4)]
     if not id in list_office_id:
         raise ValidationError(f"office_id must be one of {list_office_id}")
 
@@ -80,7 +80,6 @@ class OfficeSchema(ma.SQLAlchemyAutoSchema):
         required=True,
         validate=[validate.Range(min=1, max=4)]
     )
-    lots = ma.Nested(LotSchema)
 
 
 class OfficeSchema_put(ma.SQLAlchemyAutoSchema):
@@ -109,19 +108,17 @@ class ProductlineSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Productline
 
-    lots = ma.Nested(LotSchema)
-
 
 @token_required
 def must_be_in_list_agent_id(current_office, id):
-    list_office_id = [o.id for o in Office.query.filter_by(role=2)]
+    list_office_id = [o.office_id for o in Office.query.filter_by(role=2)]
     if not id in list_office_id:
         raise ValidationError(f"office_id must be one of {list_office_id}")
 
 
 @token_required
 def must_be_in_list_warranty_id(current_office, id):
-    list_office_id = [o.id for o in Office.query.filter_by(role=3)]
+    list_office_id = [o.office_id for o in Office.query.filter_by(role=3)]
     if not id in list_office_id:
         raise ValidationError(f"office_id must be one of {list_office_id}")
 

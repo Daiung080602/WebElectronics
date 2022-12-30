@@ -79,7 +79,7 @@ def update_customer(current_office, id):
                     if hasattr(customer, key) and value is not None and key not in ['customer_id']:
                         setattr(customer, key, value)
                 db.session.commit()
-                return {"status": "success"}, 201
+                return {"status": "success"}, 200
 
         else:
             return {'error': 'dont have permission to change info of customer'}, 400
