@@ -5,7 +5,7 @@ from flask_cors import cross_origin
 from web.Controller.Auth import auth
 from web.Extension.models import Office
 from web.Middleware.check_auth import token_required
-from web.Controller.Offices import officeschema_login
+from web.Controller.Auth import officeschema_login
 
 
 @auth.route('/api/login', methods=['POST'])
