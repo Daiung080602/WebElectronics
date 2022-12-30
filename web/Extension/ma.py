@@ -4,6 +4,35 @@ from marshmallow import fields, validate, ValidationError, post_load
 from web.Middleware.check_auth import token_required
 
 
+@token_required
+def must_be_in_list_exporter_id(current_office, id):
+    list_office_id = [o.id for o in Office.query.filter_by(role=4)]
+    if not id in list_office_id:
+        raise ValidationError(f"office_id must be one of {list_office_id}")
+
+
+@token_required
+def must_be_in_list_productline_id(current_office, id):
+    list_pl_id = [pl.productline_id for pl in Productline.query.all()]
+    if not id in list_pl_id:
+        raise ValidationError(f"office_id must be one of {list_pl_id}")
+
+
+class LotSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        include_fk = True
+        model = Lot
+
+    exporter_id = fields.Str(
+        required=True,
+        validate=[must_be_in_list_exporter_id]
+    )
+    productline_id = fields.Str(
+        required=True,
+        validate=[must_be_in_list_productline_id]
+    )
+
+
 def must_be_all_number(id):
     if sum(c.isdigit() for c in id) != len(id):
         raise ValidationError("Each char must be digit.")
@@ -51,6 +80,8 @@ class OfficeSchema(ma.SQLAlchemyAutoSchema):
         required=True,
         validate=[validate.Range(min=1, max=4)]
     )
+    lots = ma.Nested(LotSchema)
+
 
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -59,35 +90,6 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
     phone = fields.Str(
         required=True,
         validate=[validate.Length(equal=10), must_be_all_number]
-    )
-
-
-@token_required
-def must_be_in_list_exporter_id(current_office, id):
-    list_office_id = [o.id for o in Office.query.filter_by(role=4)]
-    if not id in list_office_id:
-        raise ValidationError(f"office_id must be one of {list_office_id}")
-
-
-@token_required
-def must_be_in_list_productline_id(current_office, id):
-    list_pl_id = [pl.productline_id for pl in Productline.query.all()]
-    if not id in list_pl_id:
-        raise ValidationError(f"office_id must be one of {list_pl_id}")
-
-
-class LotSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        include_fk = True
-        model = Lot
-
-    exporter_id = fields.Str(
-        required=True,
-        validate=[must_be_in_list_exporter_id]
-    )
-    productline_id = fields.Str(
-        required=True,
-        validate=[must_be_in_list_productline_id]
     )
 
 

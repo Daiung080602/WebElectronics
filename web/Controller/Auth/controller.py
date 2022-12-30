@@ -20,15 +20,20 @@ def login():
         except ValidationError as err:
             return {"error": err.messages}, 400
 
+        check1 = True  # gs co trong csdl
         # chech ton tai trong TH tu tao
         office = Office.query.filter_by(office_id=data['office_id'], password=data['password']).first()
         if office is None:
-            return {"error": "That office does not exist"}, 400
+            check1 = False
 
+        check2 = True
         # check ton tai trong TH luu hash
-        # office = Office.query.filter_by(office_id=data['office_id']).first()
-        # if office is None or not office.check_psw(data['password']):
-        #     return {"error": "That office does not exist"}, 400
+        office = Office.query.filter_by(office_id=data['office_id']).first()
+        if office is None or not office.check_psw(data['password']):
+            check2 = False
+
+        if not check1 and not check2:
+            return {"error": "That office does not exist"}, 400
         else:
             try:
                 # token should expire after 24 hrs
