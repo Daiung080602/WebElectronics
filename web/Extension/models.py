@@ -11,7 +11,7 @@ class Office(db.Model):
     address = Column(Text)
     phone = Column(String(10))
     name = Column(String(50))
-    active = Column(Boolean, defalut=True)
+    active = Column(Boolean, default=True)
     lots = relationship("Lot", backref="office", lazy=True)
 
     def __str__(self):
@@ -50,6 +50,7 @@ class Lot(db.Model):
     date_export = Column(DateTime, nullable=False)
     exporter_id = Column(String(8), ForeignKey(Office.office_id), nullable=False)
     productline_id = Column(String(50), ForeignKey(Productline.productline_id), nullable=False)
+    amount = Column(Integer, nullable=False)
     
     def __str__(self):
         return self.lot_id

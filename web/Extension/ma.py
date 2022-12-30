@@ -52,11 +52,28 @@ class OfficeSchema(ma.SQLAlchemyAutoSchema):
         validate=[validate.Range(min=1, max=4)]
     )
 
-
-
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Customer
+
+    phone = fields.Str(
+        required=True,
+        validate=[validate.Length(equal=10), must_be_all_number]
+    )
+
+
+@token_required
+def must_be_in_list_exporter_id(current_office, id):
+    list_office_id = [o.id for o in Office.query.filter_by(role=4)]
+    if not id in list_office_id:
+        raise ValidationError(f"office_id must be one of {list_office_id}")
+
+
+@token_required
+def must_be_in_list_productline_id(current_office, id):
+    list_pl_id = [pl.productline_id for pl in Productline.query.all()]
+    if not id in list_pl_id:
+        raise ValidationError(f"office_id must be one of {list_pl_id}")
 
 
 class LotSchema(ma.SQLAlchemyAutoSchema):
@@ -64,33 +81,52 @@ class LotSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         model = Lot
 
+    exporter_id = fields.Str(
+        required=True,
+        validate=[must_be_in_list_exporter_id]
+    )
+    productline_id = fields.Str(
+        required=True,
+        validate=[must_be_in_list_productline_id]
+    )
+
 
 class ProductlineSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Productline
 
+
 @token_required
-def must_be_in_list_office_id(current_office, id):
-    list_office_id = [o.id for o in Office.query.all()]
+def must_be_in_list_agent_id(current_office, id):
+    list_office_id = [o.id for o in Office.query.filter_by(role=2)]
     if not id in list_office_id:
         raise ValidationError(f"office_id must be one of {list_office_id}")
+
+
+@token_required
+def must_be_in_list_warranty_id(current_office, id):
+    list_office_id = [o.id for o in Office.query.filter_by(role=3)]
+    if not id in list_office_id:
+        raise ValidationError(f"office_id must be one of {list_office_id}")
+
 
 class ProductSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         include_fk = True
-        model = Product
-        
+        model = Lot
+
     agent_id = fields.Str(
         required=True,
-        validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_office_id]
+        validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_agent_id]
     )
     warranty_id = fields.Str(
         required=True,
-        validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_office_id]
+        validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_warranty_id]
     )
     agent = ma.Nested(OfficeSchema)
     warranty = ma.Nested(OfficeSchema)
     lot = ma.Nested(LotSchema)
+
 
 class TransactionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:

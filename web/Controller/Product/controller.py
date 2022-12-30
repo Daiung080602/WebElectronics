@@ -17,7 +17,8 @@ def get_all_products(current_office):
         elif role == 3:
             product = Office.query.filter_by(office_id=current_office.office_id).first().products_warranty
         elif role == 4:
-            product = Lot.query.filter_by(exporter_id=current_office.office_id).first().products_lot
+            lots = Lot.query.filter_by(exporter_id=current_office.office_id).all()
+            return lots_schema.jsonify(lots)
         return products_schema.jsonify(product)
 
     except Exception as e:
