@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from web.Extension import db
@@ -11,8 +11,7 @@ class Office(db.Model):
     address = Column(Text)
     phone = Column(String(10))
     name = Column(String(50))
-    products_agent = relationship("Product", foreign_keys="[Product.agent_id]")
-    products_warranty = relationship("Product", foreign_keys="[Product.warranty_id]")
+    active = Column(Boolean, defalut=True)
     lots = relationship("Lot", backref="office", lazy=True)
 
     def __str__(self):
@@ -41,6 +40,7 @@ class Productline(db.Model):
     image = Column(Text)
     date_warranty = Column(DateTime, nullable=False)        # Theo thang
     lots = relationship('Lot', backref='productline', lazy=True)
+    active = Column(Boolean, default=True)
 
     def __str__(self):
         return self.productline_id
@@ -50,7 +50,7 @@ class Lot(db.Model):
     date_export = Column(DateTime, nullable=False)
     exporter_id = Column(String(8), ForeignKey(Office.office_id), nullable=False)
     productline_id = Column(String(50), ForeignKey(Productline.productline_id), nullable=False)
-
+    
     def __str__(self):
         return self.lot_id
 
@@ -61,6 +61,9 @@ class Product(db.Model):
     agent_id = Column(String(8), ForeignKey(Office.office_id))
     warranty_times = Column(Integer)
     warranty_id = Column(String(8), ForeignKey(Office.office_id))
+    agent = relationship("Office", backref="products_agent", uselist=False, foreign_keys=[agent_id])
+    warranty = relationship("Office", backref="products_warranty", uselist=False, foreign_keys=[warranty_id])
+    lot = relationship("Lot", backref="products_lot", uselist=False, foreign_keys=[lot_id])
     
     def __str__(self):
         return self.product_id

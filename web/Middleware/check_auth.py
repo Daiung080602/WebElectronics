@@ -14,12 +14,12 @@ def token_required(f):
             return {'error': 'Token is missing !!'}, 401
         try:
             data = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
-            current_user = Office.query.filter_by(office_id=data['office_id']).first()
+            current_office = Office.query.filter_by(office_id=data['office_id']).first()
 
         except Exception as e:
             return {"error": str(e)}, 500
 
-        return f(current_user, *args, **kwargs)
+        return f(current_office, *args, **kwargs)
 
     return decorated
 

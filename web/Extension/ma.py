@@ -61,6 +61,7 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
 
 class LotSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
+        include_fk = True
         model = Lot
 
 
@@ -69,16 +70,14 @@ class ProductlineSchema(ma.SQLAlchemyAutoSchema):
         model = Productline
 
 @token_required
-def must_be_in_list_office_id(current_user, id):
-    if current_user.role == 1:
-        list_office_id = [o.id for o in Office.query.all()]
-    else:
-        list_office_id = [current_user.office_id]
+def must_be_in_list_office_id(current_office, id):
+    list_office_id = [o.id for o in Office.query.all()]
     if not id in list_office_id:
         raise ValidationError(f"office_id must be one of {list_office_id}")
 
 class ProductSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
+        include_fk = True
         model = Product
         
     agent_id = fields.Str(
@@ -89,6 +88,9 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
         required=True,
         validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_office_id]
     )
+    agent = ma.Nested(OfficeSchema)
+    warranty = ma.Nested(OfficeSchema)
+    lot = ma.Nested(LotSchema)
 
 class TransactionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
