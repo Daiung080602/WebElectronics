@@ -2,7 +2,7 @@ from web.Extension.models import db, Office
 from web.Middleware.check_auth import token_required
 from flask import request, current_app, jsonify
 from marshmallow import ValidationError
-from web.Controller.Offices import Offices, offices_schema, office_schema
+from web.Controller.Offices import Offices, office_schema_put, offices_schema, office_schema
 
 
 @Offices.route('/api/list_warranty', methods=['GET'])
@@ -105,7 +105,7 @@ def update_office(current_office, id):
 
             # validate data
             try:
-                data = office_schema.load(json_input)
+                data = office_schema_put.load(json_input)
             except ValidationError as err:
                 return {"error": err.messages}, 400
 
@@ -113,10 +113,10 @@ def update_office(current_office, id):
             if office is None:
                 return {"error": "This office is not exist"}, 400
             else:
-                office.phone = data['phone']
-                office.address = data['address']
-                office.name = data['name']
-                office.active = data['active']
+                for key, value in data.items():
+                    if hasattr(office, key) and value is not None \
+                            and key not in ['office_id', 'role', 'password']:
+                        setattr(office, key, value)
                 db.session.commit()
                 return {"status": "success"}, 201
         else:

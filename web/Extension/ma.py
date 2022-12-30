@@ -83,6 +83,18 @@ class OfficeSchema(ma.SQLAlchemyAutoSchema):
     lots = ma.Nested(LotSchema)
 
 
+class OfficeSchema_put(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Office
+
+    password = fields.Str(
+        validate=[]
+    )
+    phone = fields.Str(
+        validate=[validate.Length(equal=10), must_be_all_number]
+    )
+
+
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Customer
@@ -96,6 +108,8 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
 class ProductlineSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Productline
+
+    lots = ma.Nested(LotSchema)
 
 
 @token_required

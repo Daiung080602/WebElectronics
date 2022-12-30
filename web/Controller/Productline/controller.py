@@ -52,9 +52,9 @@ def create_new_productline(current_office):
         return {'error': str(e)}, 500
 
 
-@Productlines.route('/api/productlines', methods=['PUT'])
+@Productlines.route('/api/productlines/<id>', methods=['PUT'])
 @token_required
-def update_productline(current_office):
+def update_productline(current_office, id):
     try:
         role = current_office.role
         if role == 1:
