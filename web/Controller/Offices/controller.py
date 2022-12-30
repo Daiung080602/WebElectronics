@@ -1,8 +1,8 @@
-from web.Controller.Offices import Offices, offices_schema, office_schema
 from web.Extension.models import db, Office
 from web.Middleware.check_auth import token_required
-from flask import request
+from flask import request, current_app, jsonify
 from marshmallow import ValidationError
+from web.Controller.Offices import Offices, offices_schema, office_schema
 
 
 @Offices.route('/api/list_warranty', methods=['GET'])
@@ -25,7 +25,7 @@ def get_all_agent(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/current', methods=['GET'])
+@Offices.route('/api/admin/offices/current', methods=['GET'])
 @token_required
 def get_current_office(current_office):
     try:
@@ -52,14 +52,14 @@ def get_all_offices(current_office):
 @token_required
 def get_office_by_id(current_office, id):
     try:
-        office = Office.query.filter_by(office_id=id).first()
-        if not office:
-            return {'error': 'dont have office has this id'}, 400
-        if current_office.role == 1 or current_office.office_id == office.office_id:
-            return office_schema.jsonify(office)
+        if current_office.role == 1:
+            office = Office.query.filter_by(office_id=id).first()
+            if not office:
+                return {'error': 'dont have office has this id'}, 400
+            else:
+                return office_schema.jsonify(office)
         else:
-            return {"error": 'dont have office has this id in this base'}, 400
-
+            return {"error": 'dont have permission'}, 400
     except Exception as e:
         return {'error': str(e)}, 500
 
@@ -84,6 +84,7 @@ def create_new_office(current_office):
             else:
                 office = Office(**data)
                 office.set_psw()
+                office.active = True
 
                 db.session.add(office)
                 db.session.commit()
@@ -108,14 +109,14 @@ def update_office(current_office, id):
             except ValidationError as err:
                 return {"error": err.messages}, 400
 
-            office = Office.query.filter_by(office_id=data['office_id']).first()
-            if office:
-                return {"error": "This office id already have"}, 400
+            office = Office.query.filter_by(office_id=id).first()
+            if office is None:
+                return {"error": "This office is not exist"}, 400
             else:
-                for key, value in data.items():
-                    if hasattr(office, key) and value is not None and \
-                            key not in ['office_id', 'password', 'role']:
-                        setattr(office, key, value)
+                office.phone = data['phone']
+                office.address = data['address']
+                office.name = data['name']
+                office.active = data['active']
                 db.session.commit()
                 return {"status": "success"}, 201
         else:

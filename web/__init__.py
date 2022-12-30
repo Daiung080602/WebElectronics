@@ -28,16 +28,16 @@ def create_app(config_file='config.py'):
 
     from web.Controller.Offices.controller import Offices
     app.register_blueprint(Offices)
-
+    
     from web.Controller.Product.controller import Products
-    app.register_blueprint(Products)
-
+    app.register_blueprint(Products) 
+    
     from web.Controller.Customer.controller import Customers
     app.register_blueprint(Customers)
 
     from web.Controller.Productline.controller import Productlines
     app.register_blueprint(Productlines)
-
+    
     db.init_app(app)
     create_db(app)
 

@@ -6,23 +6,22 @@ from web.Extension import db
 
 class Office(db.Model):
     office_id = Column(String(8), primary_key=True)
-    password = Column(String(50), nullable=False)
+    password = Column(Text, nullable=False)
     role = Column(Integer)  # 1: admin, 2: dai ly, 3: bao hanh, 4: cssx
     address = Column(Text)
     phone = Column(String(10))
     name = Column(String(50))
-    active = Column(Boolean, default=True)
+    active = Column(Boolean)
     lots = relationship("Lot", backref="office", lazy=True)
 
     def __str__(self):
         return f'Office ({self.office_id}: {self.name})'
-
+    
     def set_psw(self):
         self.password = generate_password_hash(self.password)
 
     def check_psw(self, password):
         return check_password_hash(self.password, password)
-
 
 class Customer(db.Model):
     customer_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -34,19 +33,17 @@ class Customer(db.Model):
     def __str__(self):
         return f'Customer ({self.customer_id}, {self.fullname})'
 
-
 class Productline(db.Model):
     productline_id = Column(String(50), primary_key=True)
     type = Column(String(50), nullable=False)
     details = Column(Text, nullable=False)
     image = Column(Text)
-    date_warranty = Column(DateTime, nullable=False)  # Theo thang
+    date_warranty = Column(DateTime, nullable=False)        # Theo thang
     lots = relationship('Lot', backref='productline', lazy=True)
-    active = Column(Boolean, default=True)
+    active = Column(Boolean)
 
     def __str__(self):
         return self.productline_id
-
 
 class Lot(db.Model):
     lot_id = Column(String(50), primary_key=True)
@@ -54,10 +51,9 @@ class Lot(db.Model):
     exporter_id = Column(String(8), ForeignKey(Office.office_id), nullable=False)
     productline_id = Column(String(50), ForeignKey(Productline.productline_id), nullable=False)
     amount = Column(Integer, nullable=False)
-
+    
     def __str__(self):
         return self.lot_id
-
 
 class Product(db.Model):
     product_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -69,10 +65,10 @@ class Product(db.Model):
     agent = relationship("Office", backref="products_agent", uselist=False, foreign_keys=[agent_id])
     warranty = relationship("Office", backref="products_warranty", uselist=False, foreign_keys=[warranty_id])
     lot = relationship("Lot", backref="products_lot", uselist=False, foreign_keys=[lot_id])
-
+    
     def __str__(self):
         return self.product_id
-
+    
 
 class Transaction(db.Model):
     product_id = Column(Integer, ForeignKey(Product.product_id), primary_key=True)
@@ -81,3 +77,4 @@ class Transaction(db.Model):
 
     def __str__(self):
         return f'Transaction: {self.product_id} is bought by {self.customer_id} on {self.buy_date}'
+    
