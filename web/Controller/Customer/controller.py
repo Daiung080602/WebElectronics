@@ -4,7 +4,7 @@ from marshmallow import ValidationError
 from web.Extension.models import db
 from web.Controller.Customer import Customers, customer_schema, customers_schema
 from web.Middleware.check_auth import token_required
-from web.Extension.models import Customer, Lot, Transaction
+from web.Extension.models import Customer, Lot, Transaction, Product
 
 
 @Customers.route('/api/customers', methods=["GET"])
@@ -15,7 +15,7 @@ def get_all_customers(current_office):
         if role == 1:
             customers = Customer.query.all()
         elif role == 2:
-            products = Lot.query.filter_by(agent_id=current_office.office_id, state="Đã bán").all()
+            products = Product.query.filter_by(agent_id=current_office.office_id).all()
             list_product_id = [p.product_id for p in products]
             list_transaction = Transaction.query.filter(Transaction.product_id.in_(list_product_id)).all()
             customers = [t.customer for t in list_transaction]
