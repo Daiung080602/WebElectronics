@@ -5,113 +5,72 @@ from web.Extension import db
 
 
 class Office(db.Model):
-    id = Column(String(50), primary_key=True)
+    office_id = Column(String(8), primary_key=True)
+    password = Column(String(50), nullable=False)
+    role = Column(Integer, nullable=False)  # 1: admin, 2: dai ly, 3: bao hanh, 4: cssx
     address = Column(Text)
-    phone = Column(String(15))
-    id_manager = Column(String(8), nullable=False)
-    employees = relationship('Employee', backref='office', lazy=True)
-    lots = relationship('Lot', backref='office', lazy=True)
-    category = Column(Integer) # 1: dai ly, 2: cssx, 3:bao hanh
-
-    def __str__(self):
-        return f'Office ({self.id})'
-
-
-class Employee(db.Model):
-    id = Column(String(8), primary_key=True)
-    password = Column(String(200), nullable=False)
-    avatar = Column(Text)  # k can
-    fullname = Column(String(50))
     phone = Column(String(10))
-    address = Column(Text)  # k can
-    role = Column(Integer)  # 1: giam doc, 2: agent(dai ly), 3: cssx -manu, 4: bao hanh: wranty, 5: nhan vien
-    office_id = Column(String(50), ForeignKey(Office.id))
+    name = Column(String(50))
+    products_agent = relationship("Product", foreign_keys="[Product.agent_id]")
+    products_warranty = relationship("Product", foreign_keys="[Product.warranty_id]")
+    lots = relationship("Lot", backref="office", lazy=True)
 
     def __str__(self):
-        return f'Employee ({self.id}, {self.fullname})'
-
+        return f'Office ({self.office_id}: {self.name})'
+    
     def set_psw(self):
         self.password = generate_password_hash(self.password)
 
     def check_psw(self, password):
         return check_password_hash(self.password, password)
 
-
 class Customer(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
     fullname = Column(String(50), nullable=False)
     address = Column(Text)
-    phone = Column(String(15))
+    phone = Column(String(10))
+    transactions = relationship('Transaction', backref='customer', lazy=True)
 
     def __str__(self):
-        return f'Customer ({self.id}, {self.fullname})'
-
-
-class Category(db.Model):
-    type_name = Column(String(50), primary_key=True)
-    productline = Column(String(50), nullable=False)
-    productlines = relationship('Productline', backref='category', lazy=True)
-
-    def __str__(self):
-        return f'Category ({self.type_name}, {self.productline})'
-
+        return f'Customer ({self.customer_id}, {self.fullname})'
 
 class Productline(db.Model):
-    product_name = Column(String(50), primary_key=True)
-    details = Column(Text)
-    amount = Column(Integer, nullable=False)
+    productline_id = Column(String(50), primary_key=True)
+    type = Column(String(50), nullable=False)
+    details = Column(Text, nullable=False)
     image = Column(Text)
-    time_warranty = Column(DateTime, nullable=False)
-    product_type = Column(String(50), ForeignKey(Category.type_name), nullable=False)
-    products = relationship('Product', backref='productline', lazy=True)
+    date_warranty = Column(DateTime, nullable=False)        # Theo thang
+    lots = relationship('Lot', backref='productline', lazy=True)
 
     def __str__(self):
-        return self.productline
-
+        return self.productline_id
 
 class Lot(db.Model):
     lot_id = Column(String(50), primary_key=True)
     date_export = Column(DateTime, nullable=False)
-    id_manufacture = Column(String(50), ForeignKey(Office.id), nullable=False)
-    products = relationship('Product', backref='lot', lazy=True)
+    exporter_id = Column(String(8), ForeignKey(Office.office_id), nullable=False)
+    productline_id = Column(String(50), ForeignKey(Productline.productline_id), nullable=False)
 
     def __str__(self):
         return self.lot_id
 
-
 class Product(db.Model):
-    id = Column(String(15), primary_key=True)
-    product_name = Column(String(50), ForeignKey(Productline.product_name), nullable=False)
+    product_id = Column(Integer, primary_key=True, autoincrement=True)
+    state = Column(String(50), nullable=False)
     lot_id = Column(String(50), ForeignKey(Lot.lot_id), nullable=False)
-
+    agent_id = Column(String(8), ForeignKey(Office.office_id))
+    warranty_times = Column(Integer)
+    warranty_id = Column(String(8), ForeignKey(Office.office_id))
+    
     def __str__(self):
-        return self.id
-
-
-class Management(db.Model):
-    id_product = Column(String(15), ForeignKey(Product.id), primary_key=True)
-    id_agent = Column(String(50), ForeignKey(Office.id), primary_key=True)
-    is_warranty = Column(String(50), ForeignKey(Office.id), primary_key=True)
-    state = Column(String(50), nullable=False)
-
-    def __str__(self):
-        return f'Product {self.id_product} belongs to {self.id_agent} is {self.state}'
-
-
-class WarrantyManagement(db.Model):
-    id_product = Column(String(15), ForeignKey(Product.id), primary_key=True)
-    id_agent = Column(String(50), ForeignKey(Office.id), primary_key=True)
-    state = Column(String(50), nullable=False)
-    warranty_times = Column(Integer, nullable=False)
-
-    def __str__(self):
-        return f'Product {self.id_product} is  repaired {self.warranty_times} times'
-
+        return self.product_id
+    
 
 class Transaction(db.Model):
-    id_product = Column(String(15), ForeignKey(Product.id), primary_key=True)
-    id_customer = Column(Integer, ForeignKey(Customer.id), primary_key=True)
+    product_id = Column(Integer, ForeignKey(Product.product_id), primary_key=True)
+    customer_id = Column(Integer, ForeignKey(Customer.customer_id), primary_key=True)
     buy_date = Column(DateTime, nullable=False)
 
     def __str__(self):
-        return f'Transaction: {self.id_product} is bought by {self.id_customer} on {self.buy_date}'
+        return f'Transaction: {self.product_id} is bought by {self.customer_id} on {self.buy_date}'
+    

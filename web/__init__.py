@@ -15,18 +15,17 @@ def create_db(app):
 
 def create_app(config_file='config.py'):
     app = Flask(__name__)
+    CORS(app)
     app.config.from_pyfile(config_file)
-    CORS.init_app(
-        app=app,
-        origins='*',
-        methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
-        supports_credentials=True
-    )
-    from web.Auth.controller import auth
+
+    from web.Controller.Auth.controller import auth
     app.register_blueprint(auth)
 
-    from web.Employees.controller import employees
-    app.register_blueprint(employees)
+    from web.Controller.Offices.controller import Offices
+    app.register_blueprint(Offices)
+
+    from web.Controller.Product.controller import Products
+    app.register_blueprint(Products)
 
     db.init_app(app)
     create_db(app)

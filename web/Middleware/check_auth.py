@@ -1,7 +1,7 @@
 from functools import wraps
 import jwt
 from flask import request, current_app
-from web.Extension.models import Employee
+from web.Extension.models import Office
 
 
 def token_required(f):
@@ -14,7 +14,7 @@ def token_required(f):
             return {'error': 'Token is missing !!'}, 401
         try:
             data = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
-            current_user = Employee.query.filter_by(id=data['employee_id']).first()
+            current_user = Office.query.filter_by(id=data['office_id']).first()
 
         except Exception as e:
             return {"error": str(e)}, 500
