@@ -2,9 +2,10 @@ import jwt
 from flask import request, current_app, jsonify
 from marshmallow import ValidationError
 from flask_cors import cross_origin
-from web.Controller.Auth import auth, officeschema_login
+from web.Controller.Auth import auth
 from web.Extension.models import Office
 from web.Middleware.check_auth import token_required
+from web.Controller.Offices import officeschema_login
 
 
 @auth.route('/api/login', methods=['POST'])
@@ -20,14 +21,14 @@ def login():
             return {"error": err.messages}, 400
 
         # chech ton tai trong TH tu tao
-        office = Office.query.filter_by(id=data['office_id'], password=data['password']).first()
+        office = Office.query.filter_by(office_id=data['office_id'], password=data['password']).first()
         if office is None:
             return {"error": "That office does not exist"}, 400
 
         # check ton tai trong TH luu hash
-        office = Office.query.filter_by(id=data['office_id']).first()
-        if office is None or not office.check_psw(data['password']):
-            return {"error": "That office does not exist"}, 400
+        # office = Office.query.filter_by(office_id=data['office_id']).first()
+        # if office is None or not office.check_psw(data['password']):
+        #     return {"error": "That office does not exist"}, 400
         else:
             try:
                 # token should expire after 24 hrs
@@ -46,7 +47,6 @@ def login():
 
 
 @auth.route('/api/logout', methods=['GET'])
-@cross_origin
 @token_required
 def logout(user):
     resp = jsonify({"status": "success"})

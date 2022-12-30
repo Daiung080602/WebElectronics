@@ -7,7 +7,7 @@ from web.Extension import db
 class Office(db.Model):
     office_id = Column(String(8), primary_key=True)
     password = Column(String(50), nullable=False)
-    role = Column(Integer, nullable=False)  # 1: admin, 2: dai ly, 3: bao hanh, 4: cssx
+    role = Column(Integer)  # 1: admin, 2: dai ly, 3: bao hanh, 4: cssx
     address = Column(Text)
     phone = Column(String(10))
     name = Column(String(50))

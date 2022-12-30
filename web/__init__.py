@@ -21,10 +21,10 @@ def create_app(config_file='config.py'):
     from web.Controller.Auth.controller import auth
     app.register_blueprint(auth)
 
-    from web.Controller.Offices.controller import Offices
+    from web.Controller.Offices import Offices
     app.register_blueprint(Offices)
 
-    from web.Controller.Product.controller import Products
+    from web.Controller.Product import Products
     app.register_blueprint(Products)
 
     db.init_app(app)
