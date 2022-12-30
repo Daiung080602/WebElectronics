@@ -1,6 +1,5 @@
-from flask import session
 from flask_admin.contrib.sqla import ModelView
-from web.Extension.models import Office, Employee, Customer, Product, Management, WarrantyManagement, Transaction
+from web.Extension.models import Office, Customer, Product, Productline, Transaction, Lot
 from web.Extension import admin, db
 
 
@@ -15,9 +14,8 @@ class AdminView(ModelView):
 
 
 admin.add_view(AdminView(Office, db.session))
-admin.add_view(AdminView(Employee, db.session))
 admin.add_view(AdminView(Customer, db.session))
 admin.add_view(AdminView(Product, db.session))
-admin.add_view(AdminView(Management, db.session))
-admin.add_view(AdminView(WarrantyManagement, db.session))
+admin.add_view(AdminView(Productline, db.session))
 admin.add_view(AdminView(Transaction, db.session))
+admin.add_view(AdminView(Lot, db.session))

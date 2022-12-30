@@ -2,10 +2,8 @@ import jwt
 from flask import request, current_app, jsonify
 from marshmallow import ValidationError
 from flask_cors import cross_origin
-
-from web.Controller.Employees import employee_login_schema
-from web.Controller.Auth import auth
-from web.Extension.models import Employee
+from web.Controller.Auth import auth, officeschema_login
+from web.Extension.models import Office
 from web.Middleware.check_auth import token_required
 
 
@@ -17,28 +15,28 @@ def login():
 
         # validate data
         try:
-            data = employee_login_schema.load(json_input)
+            data = officeschema_login.load(json_input)
         except ValidationError as err:
             return {"error": err.messages}, 400
 
         # chech ton tai trong TH tu tao
-        employee = Employee.query.filter_by(id=data['id'], password=data['password']).first()
-        if employee is None:
-            return {"error": "That employee does not exist"}, 400
+        office = Office.query.filter_by(office_id=data['office_id'], password=data['password']).first()
+        if office is None:
+            return {"error": "That office does not exist"}, 400
 
         # check ton tai trong TH luu hash
-        employee = Employee.query.filter_by(id=data['id']).first()
-        if employee is None or not employee.check_psw(data['password']):
-            return {"error": "That employee does not exist"}, 400
+        # office = Office.query.filter_by(id=data['office_id']).first()
+        # if office is None or not office.check_psw(data['password']):
+        #     return {"error": "That office does not exist"}, 400
         else:
             try:
                 # token should expire after 24 hrs
                 token = jwt.encode(
-                    {"employee_id": employee.id},
+                    {"office_id": office.office_id},
                     current_app.config["SECRET_KEY"]
                 )
-                resp = jsonify({'status': 'success', "token": token, "role": employee.role})
-                resp.set_cookie("access-token", token, )
+                resp = jsonify({'status': 'success', "token": token, "role": office.role})
+                resp.set_cookie("access-token", token)
                 resp.status_code = 200
                 return resp
             except Exception as e:
@@ -48,8 +46,9 @@ def login():
 
 
 @auth.route('/api/logout', methods=['GET'])
+# @cross_origin
 @token_required
-def logout(user):
+def logout(office):
     resp = jsonify({"status": "success"})
     resp.set_cookie("access-token", '', expires=0)
     resp.status_code = 200

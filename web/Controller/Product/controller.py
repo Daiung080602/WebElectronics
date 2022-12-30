@@ -1,32 +1,32 @@
 from flask import request
 from marshmallow import ValidationError
 
-from web.Controller.Product import products, product_schema, products_schema
+from web.Controller.Product import Products, product_schema, products_schema
 from web.Extension.models import Product, db, Office, Lot
 from web.Middleware.check_auth import token_required
 
 
-@products.route('/products', methods=['GET'])
+@Products.route('/api/products', methods=['GET'])
 @token_required
-def get_all_products(current_user):
+def get_all_products(current_office):
     try:
-        role = current_user.role
-        print(role)
+        role = current_office.role
         if role == 1:
             product = Product.query.all()
-        elif role == 2 or role == 3 or role == 4:
-            product = Office.query.filter_by(id=current_user.office_id)
-            # product = Product.query.filter_by(id=current_user.office_id).first().employees
+        elif role == 2:
+            product = Office.query.filter_by(office_id=current_office.office_id).first().products_agent
+        elif role == 3:
+            product = Office.query.filter_by(office_id=current_office.office_id).first().products_warranty
         return products_schema.jsonify(product)
 
     except Exception as e:
         return {'error': str(e)}, 500
 
 
-@products.route('/products/<id>', methods=['GET'])
+@Products.route('/products/<id>', methods=['GET'])
 @token_required
 def get_product_by_id(current_user, id):
-    product = Product.query.filter_by(id=id).first()
+    product = Product.query.filter_by(product_id=id).first()
     if not product:
         return {'error': 'dont have employee has this id'}, 400
     if current_user.role == 1 or current_user.office_id == product.office_id:
@@ -35,7 +35,7 @@ def get_product_by_id(current_user, id):
         return {"error": 'dont have employee has this id'}, 400
 
 
-@products.route('/products/create', methods=['POST'])
+@Products.route('/products/create', methods=['POST'])
 @token_required
 def create_new_product(current_user):
     try:
@@ -59,7 +59,7 @@ def create_new_product(current_user):
         return {"error": str(e)}, 500
 
 
-@products.route('/products/<id>', methods=['PUT'])
+@Products.route('/products/<id>', methods=['PUT'])
 @token_required
 def update_product(current_user, id):
     try:
@@ -85,7 +85,7 @@ def update_product(current_user, id):
         return {"error": str(e)}, 500
 
 
-@products.route('/products/<id>', methods=['DELETE'])
+@Products.route('/products/<id>', methods=['DELETE'])
 @token_required
 def delete_new_product(current_user, id):
     product = Product.query.filter_by(id=id).first()
