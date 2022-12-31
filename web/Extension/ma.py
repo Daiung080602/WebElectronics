@@ -94,7 +94,7 @@ class LotSchema(ma.SQLAlchemyAutoSchema):
         validate=[must_be_in_list_productline_id]
     )
     office = ma.Nested(OfficeSchema)
-    number_of_product = fields.Method("num_of_products_in_lot_db")
+    # number_of_product = fields.Method("num_of_products_in_lot_db")
 
     def num_of_products_in_lot_db(self, lot):
         return len(lot.products_lot)
@@ -114,8 +114,8 @@ class ProductlineSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Productline
 
-    num_of_product_in_lots = fields.Method("num_of_products_in_productline_lots")
-    num_of_product_in_db = fields.Method("num_of_products_in_productline_db")
+    # num_of_product_in_lots = fields.Method("num_of_products_in_productline_lots")
+    # num_of_product_in_db = fields.Method("num_of_products_in_productline_db")
 
     def num_of_products_in_productline_lots(self, pl):
         lots = Lot.query.filter_by(productline_id=pl.productline_id).all()

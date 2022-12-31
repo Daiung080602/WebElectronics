@@ -43,6 +43,7 @@ def create_app(config_file='config.py'):
 
     ma.init_app(app)
     migrate.init_app(app, db)
-    # khi nào sửa cơ sở dữ liệu thì chạy 'flask db migrate' rồi 'flask db upgrade'
+    # Cần chạy 'flask db init' và 'flask db migarte' trước tiên
+    # mỗi lần sửa cơ sở dữ liệu thì chạy 'flask db migrate' rồi 'flask db upgrade'
 
     return app
