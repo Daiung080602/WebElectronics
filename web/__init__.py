@@ -23,19 +23,19 @@ def create_app(config_file='config.py'):
     )
     app.config.from_pyfile(config_file)
 
-    from web.Controller.Auth.controller import auth
+    from web.Controller.Auth.route import auth
     app.register_blueprint(auth)
 
-    from web.Controller.Offices.controller import Offices
+    from web.Controller.Offices.route import Offices
     app.register_blueprint(Offices)
     
-    from web.Controller.Product.controller import Products
+    from web.Controller.Product.route import Products
     app.register_blueprint(Products) 
     
-    from web.Controller.Customer.controller import Customers
+    from web.Controller.Customer.route import Customers
     app.register_blueprint(Customers)
 
-    from web.Controller.Productline.controller import Productlines
+    from web.Controller.Productline.route import Productlines
     app.register_blueprint(Productlines)
     
     db.init_app(app)

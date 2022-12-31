@@ -2,13 +2,14 @@ import jwt
 from flask import request, current_app, jsonify
 from marshmallow import ValidationError
 from flask_cors import cross_origin
-from web.Controller.Auth import auth
+
 from web.Extension.models import Office
 from web.Middleware.check_auth import token_required
-from web.Controller.Auth import officeschema_login
+from web.Extension.ma import OfficeSchema_login
+
+officeschema_login = OfficeSchema_login()
 
 
-@auth.route('/api/login', methods=['POST'])
 @cross_origin()
 def login():
     try:
@@ -51,7 +52,6 @@ def login():
         return {"error": str(e)}, 500
 
 
-@auth.route('/api/logout', methods=['GET'])
 @token_required
 def logout(user):
     resp = jsonify({"status": "success"})

@@ -1,12 +1,14 @@
 from flask import request
 from marshmallow import ValidationError
 
-from web.Controller.Productline import Productlines, productlines_schema, productline_schema
 from web.Extension.models import Productline, db, Product, Lot
 from web.Middleware.check_auth import token_required
+from web.Extension.ma import ProductlineSchema
+
+productline_schema = ProductlineSchema()
+productlines_schema = ProductlineSchema(many=True)
 
 
-@Productlines.route('/api/productlines', methods=['GET'])
 @token_required
 def get_all_productlines(current_office):
     try:
@@ -30,7 +32,6 @@ def get_all_productlines(current_office):
         return {'error': str(e)}, 500
 
 
-@Productlines.route('/api/productlines', methods=['POST'])
 @token_required
 def create_new_productline(current_office):
     try:
@@ -59,7 +60,6 @@ def create_new_productline(current_office):
         return {'error': str(e)}, 500
 
 
-@Productlines.route('/api/productlines/<id>', methods=['PUT'])
 @token_required
 def update_productline(current_office, id):
     try:

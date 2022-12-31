@@ -1,13 +1,15 @@
 from flask import request
 from marshmallow import ValidationError
 
-from web.Extension.models import db
-from web.Controller.Customer import Customers, customer_schema, customers_schema, transaction_schema
 from web.Middleware.check_auth import token_required
-from web.Extension.models import Customer, Transaction, Product
+from web.Extension.models import db, Customer, Transaction, Product
+from web.Extension.ma import CustomerSchema, TransactionSchema
+
+customer_schema = CustomerSchema()
+customers_schema = CustomerSchema(many=True)
+transaction_schema = TransactionSchema()
 
 
-@Customers.route('/api/customers', methods=["GET"])
 @token_required
 def get_all_customers(current_office):
     try:
@@ -27,7 +29,6 @@ def get_all_customers(current_office):
         return {'error': str(e)}, 500
 
 
-@Customers.route('/api/customers', methods=["POST"])
 @token_required
 def create_new_customer(current_office):
     try:
@@ -57,7 +58,6 @@ def create_new_customer(current_office):
         return {'error': str(e)}, 500
 
 
-@Customers.route('/api/customers/<id>', methods=["PUT"])
 @token_required
 def update_customer(current_office, id):
     try:
@@ -88,7 +88,6 @@ def update_customer(current_office, id):
         return {'error': str(e)}, 500
 
 
-@Customers.route('/api/transactions', methods=['POST'])
 @token_required
 def create_transaction(current_office):
     try:

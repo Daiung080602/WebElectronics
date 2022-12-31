@@ -1,11 +1,16 @@
+from flask import request
+from marshmallow import ValidationError
+
 from web.Extension.models import db, Office
 from web.Middleware.check_auth import token_required
-from flask import request, current_app, jsonify
-from marshmallow import ValidationError
-from web.Controller.Offices import Offices, office_schema_put, offices_schema, office_schema
+from web.Extension.ma import OfficeSchema, OfficeSchema_put
 
 
-@Offices.route('/api/list_warranty', methods=['GET'])
+offices_schema = OfficeSchema(many=True)
+office_schema = OfficeSchema()
+office_schema_put = OfficeSchema_put()
+
+
 @token_required
 def get_all_warranty(current_office):
     try:
@@ -15,7 +20,6 @@ def get_all_warranty(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/list_agent', methods=['GET'])
 @token_required
 def get_all_agent(current_office):
     try:
@@ -25,7 +29,6 @@ def get_all_agent(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices/current', methods=['GET'])
 @token_required
 def get_current_office(current_office):
     try:
@@ -34,7 +37,6 @@ def get_current_office(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices', methods=['GET'])
 @token_required
 def get_all_offices(current_office):
     try:
@@ -48,7 +50,6 @@ def get_all_offices(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices/<id>', methods=['GET'])
 @token_required
 def get_office_by_id(current_office, id):
     try:
@@ -64,7 +65,6 @@ def get_office_by_id(current_office, id):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices', methods=['POST'])
 @token_required
 def create_new_office(current_office):
     try:
@@ -95,7 +95,6 @@ def create_new_office(current_office):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices/<id>', methods=['PUT'])
 @token_required
 def update_office(current_office, id):
     try:
@@ -125,9 +124,8 @@ def update_office(current_office, id):
         return {'error': str(e)}, 500
 
 
-@Offices.route('/api/admin/offices/<id>', methods=['DELETE'])
 @token_required
-def delete_new_office(current_office, id):
+def delete_office(current_office, id):
     try:
         role = current_office.role
         if role == 1:

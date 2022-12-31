@@ -1,12 +1,16 @@
 from flask import request
 from marshmallow import ValidationError
-from web.Controller.Product import Products, product_schema, products_schema, lots_schema, lot_schema
 from web.Extension.models import Product, db, Office, Lot
 from web.Middleware.check_auth import token_required
-from web.Extension.ma import must_be_in_list_agent_id, must_be_in_list_warranty_id, must_be_in_list_state
+from web.Extension.ma import must_be_in_list_agent_id, must_be_in_list_warranty_id, \
+    must_be_in_list_state, ProductSchema, LotSchema
+
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
+lot_schema = LotSchema()
+lots_schema = LotSchema(many=True)
 
 
-@Products.route('/api/products', methods=['GET'])
 @token_required
 def get_all_products(current_office):
     try:
@@ -26,7 +30,6 @@ def get_all_products(current_office):
         return {'error': str(e)}, 500
 
 
-@Products.route('/api/products/<state>', methods=['GET'])
 @token_required
 def get_product_by_state(current_office, state):
     try:
@@ -48,7 +51,6 @@ def get_product_by_state(current_office, state):
         return {'error': str(e)}, 500
 
 
-@Products.route('/api/products/<id>', methods=['PUT'])
 @token_required
 def update_product(current_office, id):
     try:
@@ -87,7 +89,6 @@ def update_product(current_office, id):
         return {"error": str(e)}, 500
 
 
-@Products.route('/api/lots', methods=['GET'])
 @token_required
 def get_all_lots(current_office):
     try:
@@ -107,7 +108,6 @@ def get_all_lots(current_office):
         return {'error': str(e)}, 500
 
 
-@Products.route('/api/lots', methods=['POST'])
 @token_required
 def create_new_lot(current_office):
     try:
@@ -140,7 +140,6 @@ def create_new_lot(current_office):
         return {'error': str(e)}, 500
 
 
-@Products.route('/api/lots/<id>', methods=['PUT'])
 @token_required
 def update_state_if_agent_get_lot(current_office, id):
     try:
