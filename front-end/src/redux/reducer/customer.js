@@ -1,26 +1,22 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 export default createSlice({
-    name: 'office',
+    name: 'customer',
     initialState: {
         filter: {
-            searchText: '',
-            role: 'Quyền'
+            searchText: ''
         },
-        listOffice: [],
+        listCustomer: [],
         form: {
-            office_id: '',
-            password: '',
-            name: '',
+            customer_id: '',
+            fullname: '',
             phone: '',
             address: '',
-            role: 2,
-            active: 'true'
         }
     },
     reducers: {
-        setListOffice: (state, action) => {
-            state.listOffice = action.payload
+        setListCustomer: (state, action) => {
+            state.listCustomer = action.payload
         },
         setSearchChange: (state, action) => {
             state.filter = action.payload

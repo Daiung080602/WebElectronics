@@ -2,12 +2,13 @@ import {useEffect, useState} from "react";
 import {Button, Form, InputGroup} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import {useDispatch, useSelector} from "react-redux";
-import {infoProductSelector, listProductSelector} from "../../redux/selector";
-import product from "../../redux/reducer/product";
+import {infoProductLineSelector, listProductLineSelector} from "../../../redux/selector";
+import product from "../../../redux/reducer/productline";
 import axios from "axios";
-import {apiProduct} from "../url";
+import {apiProductLine} from "../../url";
+import productline from "../../../redux/reducer/productline";
 
-function ProductForm(props) {
+function ProductLineForm(props) {
     const catalog = ['iphone', 'ipad', 'laptop', 'PC']
 
     const [show, setShow] = useState(false)
@@ -19,16 +20,10 @@ function ProductForm(props) {
 
     const [changeImg, setChangeImg] = useState(false)
 
-    const initForm = useSelector(infoProductSelector)
-    const listProduct = useSelector(listProductSelector)
+    const initForm = useSelector(infoProductLineSelector)
+    const listProduct = useSelector(listProductLineSelector)
 
     const dispatch = useDispatch()
-
-    // cloudinary.config({
-    //     cloud_name: 'dnyy9glo6',
-    //     api_key: '937578929118168',
-    //     api_secret: 'Wx05lt4Ky9ZBABoRMjad8uOtW1Q'
-    // })
 
     function handleClose() {
         setShow(false)
@@ -44,10 +39,10 @@ function ProductForm(props) {
         }
     }, [])
 
-    const changeName = (e) => {
+    const changePlId = (e) => {
         setForm({
             ...form,
-            name: e.target.value
+            productline_id: e.target.value
         })
     }
 
@@ -76,34 +71,41 @@ function ProductForm(props) {
 
     }
 
-    const changeCatalog = (e) => {
+    const changeType = (e) => {
         setForm({
             ...form,
-            catalog: e.target.value
+            type: e.target.value
         })
     }
 
-    const changeWarrantyPeriod = (e) => {
+    const changeDate = (e) => {
         setForm({
             ...form,
-            warrantyPeriod: e.target.value
+            date_warranty: e.target.value
         })
     }
 
-    const changeMota = (e) => {
+    const changeDetail = (e) => {
         setForm({
             ...form,
-            mota: e.target.value
+            details: e.target.value
         })
     }
 
-    function checkName() {
-        if (form.name.length === 0) {
+    const changeActive = (e) => {
+        setForm({
+            ...form,
+            active: e.target.checked
+        })
+    }
+
+    function checkPlID() {
+        if (form.productline_id.length === 0) {
             return "Bạn chưa nhập tên dòng sản phẩm"
         }
         if (props.type === 'add') {
             let product = listProduct.find(function (e) {
-                return e.name === form.name
+                return e.productline_id === form.productline_id
             })
             if (product !== undefined) {
                 return "Dòng sản phẩm này đã tồn tại"
@@ -115,6 +117,12 @@ function ProductForm(props) {
     function checkImage() {
         if (images.length === 0 || images.length > 5) {
             return "Bạn chưa chọn ảnh hoặc đã chọn quá 5 ảnh"
+        }
+        if (!changeImg) {
+            setForm({
+                ...form,
+                images: images.toString()
+            })
         }
         return "Yes"
 
@@ -139,7 +147,7 @@ function ProductForm(props) {
         }
         setForm({
             ...form,
-            image: images
+            image: images.toString()
         })
 
     }
@@ -149,18 +157,18 @@ function ProductForm(props) {
     //         .catch(_err=> console.log("Something went wrong, please try again later."));
     // }
 
-    function checkWarrantyPeriod() {
-        if (form.warrantyPeriod.length === 0) {
+    function checkDate() {
+        if (form.date_warranty === '') {
             return "Bạn chưa nhập thời gian bảo hành"
         }
-        if (form.warrantyPeriod < 1) {
+        if (form.date_warranty < 1) {
             return "Thời gian bảo hành ít nhất là 1 tháng"
         }
         return "Yes"
     }
 
-    function checkMota() {
-        if (form.mota.length === 0) {
+    function checkDetail() {
+        if (form.details.length === 0) {
             return "Bạn chưa nhập mô tả"
         }
         return "Yes"
@@ -168,11 +176,11 @@ function ProductForm(props) {
 
     const clickSubmit = async (e) => {
         let success = true
-        if (checkName() === "Yes") {
+        if (checkPlID() === "Yes") {
             document.getElementById("name-warning").innerText = ''
         } else {
             success = false
-            document.getElementById("name-warning").innerText = checkName()
+            document.getElementById("name-warning").innerText = checkPlID()
         }
         if (checkImage() === "Yes") {
             document.getElementById("image-warning").innerText = ''
@@ -180,17 +188,17 @@ function ProductForm(props) {
             success = false
             document.getElementById("image-warning").innerText = checkImage()
         }
-        if (checkWarrantyPeriod() === "Yes") {
+        if (checkDate() === "Yes") {
             document.getElementById("wp-warning").innerText = ''
         } else {
             success = false
-            document.getElementById("wp-warning").innerText = checkWarrantyPeriod()
+            document.getElementById("wp-warning").innerText = checkDate()
         }
-        if (checkMota() === "Yes") {
+        if (checkDetail() === "Yes") {
             document.getElementById("mota-warning").innerText = ''
         } else {
             success = false
-            document.getElementById("mota-warning").innerText = checkMota()
+            document.getElementById("mota-warning").innerText = checkDetail()
         }
         if (success) {
             if (props.type === "edit" && !changeImg) {
@@ -210,9 +218,10 @@ function ProductForm(props) {
         }
     }, [form.image])
 
-    function postOrPut() {
+    async function postOrPut() {
+        console.log(form)
         if (props.type === "add") {
-            axios.post(apiProduct, form)
+            axios.post(apiProductLine, form)
                 .then(response => {
                     if (response.status === 201) {
                         return response.data
@@ -236,8 +245,10 @@ function ProductForm(props) {
                     setShow(true)
                 })
         } else {
-            axios.put(apiProduct + "/" + form.name, form)
+            console.log(form)
+            axios.put(apiProductLine + "/" + form.productline_id, form)
                 .then(response => {
+                    console.log(response)
                     if (response.status === 200) {
                         return response.data
                     } else {
@@ -256,6 +267,7 @@ function ProductForm(props) {
                     setShow(true)
                 })
                 .catch(error => {
+                    console.log(error)
                     setStatus(error.message)
                     setShow(true)
                 })
@@ -268,9 +280,9 @@ function ProductForm(props) {
     }
 
     useEffect(() => {
-        axios.get(apiProduct)
+        axios.get(apiProductLine)
             .then(response => {
-                dispatch(product.actions.setListProduct(response.data))
+                dispatch(productline.actions.setListProductLine(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -285,8 +297,8 @@ function ProductForm(props) {
                 <Form.Control
                     id={"name"}
                     type={"text"}
-                    value={form.name}
-                    onChange={changeName}
+                    value={form.productline_id}
+                    onChange={changePlId}
                 />
                 <Form.Text id={"name-warning"} className="text-danger"/>
             </Form.Group>
@@ -314,7 +326,7 @@ function ProductForm(props) {
 
             <Form.Group className={"mb-3"}>
                 <Form.Label>Phân loại</Form.Label>
-                <select className={"form-select"} aria-label={"Danh mục"} value={form.catalog} onChange={changeCatalog}>
+                <select className={"form-select"} aria-label={"Danh mục"} value={form.type} onChange={changeType}>
                     {
                         catalog.map((e) => (
                             <option key={e} value={e}>{e}</option>
@@ -328,8 +340,8 @@ function ProductForm(props) {
                 <InputGroup>
                     <Form.Control
                         type={"number"}
-                        value={form.warrantyPeriod}
-                        onChange={changeWarrantyPeriod}
+                        value={form.date_warranty}
+                        onChange={changeDate}
                     />
                     <InputGroup.Text>tháng</InputGroup.Text>
                 </InputGroup>
@@ -338,8 +350,16 @@ function ProductForm(props) {
 
             <Form.Group className={"mb-3"}>
                 <Form.Label>Mô tả</Form.Label>
-                <textarea className={"form-control"} rows={"4"} value={form.mota} onChange={changeMota}/>
+                <textarea className={"form-control"} rows={"4"} value={form.details} onChange={changeDetail}/>
                 <Form.Text id={"mota-warning"} className="text-danger"/>
+            </Form.Group>
+
+            <Form.Group className={"mb-3"}>
+                <input
+                    type={"checkbox"}
+                    checked={form.active}
+                    onChange={changeActive}
+                /> Hoạt động
             </Form.Group>
 
             <div className={"d-flex flex-row-reverse"}>
@@ -386,4 +406,4 @@ function ProductForm(props) {
     )
 }
 
-export default ProductForm
+export default ProductLineForm

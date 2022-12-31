@@ -1,10 +1,10 @@
-import {Component, useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
-import EmployeeForm from "./EmployeeForm";
+import {useState} from "react";
+import {Button, Modal} from "react-bootstrap";
+import ProductLineForm from "./ProductLineForm";
 import {useDispatch} from "react-redux";
-import employee from "../../redux/reducer/employee";
+import productline from "../../../redux/reducer/productline";
 
-function ModalInfoEmployee(props) {
+function ModalInfoProductLine(props) {
     const [show, setShow] = useState(false);
 
     const dispatch = useDispatch()
@@ -12,16 +12,16 @@ function ModalInfoEmployee(props) {
     const clickButton = (e) => {
         setShow(true)
         if (props.type === "add") {
-            dispatch(employee.actions.formChange({
-                id: '',
-                password: '',
-                fullname: '',
-                phone: '',
-                office: '',
-                role: 'Admin'
+            dispatch(productline.actions.formChange({
+                productline_id: '',
+                image: [],
+                type: 'iphone',
+                date_warranty: '',
+                details: '',
+                active: true,
             }))
         } else {
-            dispatch(employee.actions.formChange(props.info))
+            dispatch(productline.actions.formChange(props.info))
         }
     }
 
@@ -54,9 +54,10 @@ function ModalInfoEmployee(props) {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EmployeeForm
+                    <ProductLineForm
                         info={props.info}
                         type={props.type}
+                        show={setShow}
                     />
                 </Modal.Body>
             </Modal>
@@ -64,4 +65,4 @@ function ModalInfoEmployee(props) {
     )
 }
 
-export default ModalInfoEmployee
+export default ModalInfoProductLine

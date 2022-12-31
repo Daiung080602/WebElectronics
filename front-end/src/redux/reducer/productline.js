@@ -1,28 +1,29 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 export default createSlice({
-    name: 'employee',
+    name: 'productline',
     initialState: {
         filter: {
             searchText: '',
-            role: 'Quyền'
+            type: 'Danh mục',
+            date: 'Thời gian bảo hành'
         },
-        listEmployee: [],
+        listProductLine: [],
         form: {
-            id: '',
-            password: '',
-            fullname: '',
-            phone: '',
-            office: '',
-            role: 'Admin'
+            productline_id: '',
+            image: [],
+            type: 'iphone',
+            date_warranty: '',
+            detail: '',
+            active: true
         }
     },
     reducers: {
-        setListEmployee: (state, action) => {
+        setListProductLine: (state, action) => {
             action.payload.map((e) => {
-                e.selected = false
+                e.image = e.image.split(',')
             })
-            state.listEmployee = action.payload
+            state.listProductLine = action.payload
         },
         setSearchChange: (state, action) => {
             state.filter = action.payload
@@ -31,14 +32,14 @@ export default createSlice({
             state.form = action.payload
         },
         selectedChange: (state, action) => {
-            state.listEmployee.map((e) => {
-                if (e.id === action.payload) {
+            state.listProductLine.map((e) => {
+                if (e.name === action.payload) {
                     e.selected = !e.selected
                 }
             })
         },
         selectedAll: (state, action) => {
-            state.listEmployee.map((e) => {
+            state.listProductLine.map((e) => {
                 e.selected = action.payload
             })
         }

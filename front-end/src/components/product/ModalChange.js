@@ -1,28 +1,16 @@
-import {useState} from "react";
-import {Button, Modal} from "react-bootstrap";
+import {Component, useState} from "react";
+import {Button, Form, Modal} from "react-bootstrap";
 import {useDispatch} from "react-redux";
-import office from "../../redux/reducer/office";
-import OfficeForm from "./OfficeForm";
+import {FaRegEdit} from "react-icons/fa";
+import ProductForm from "./ProductForm";
 
-function ModalInfoOffice(props) {
+function ModalChange(props) {
     const [show, setShow] = useState(false);
 
     const dispatch = useDispatch()
 
     const clickButton = (e) => {
         setShow(true)
-        if (props.type === "add") {
-            dispatch(office.actions.formChange({
-                id: '',
-                name: '',
-                phone: '',
-                address: '',
-                manager: '',
-                type: 'Đại lý'
-            }))
-        } else {
-            dispatch(office.actions.formChange(props.info))
-        }
     }
 
     const handleClose = (e) => {
@@ -33,12 +21,10 @@ function ModalInfoOffice(props) {
         <>
             <div>
                 <Button
-                    className={props.styleButton}
                     onClick={clickButton}
-                    variant={props.variant}
+                    variant={"link"}
                 >
-                    {props.element}
-                    {props.buttonContent}
+                    <FaRegEdit/>
                 </Button>
             </div>
             <Modal
@@ -50,13 +36,12 @@ function ModalInfoOffice(props) {
                 centered>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        {props.title}
+                        Sửa trạng thái sản phẩm
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <OfficeForm
+                    <ProductForm
                         info={props.info}
-                        type={props.type}
                         show={setShow}
                     />
                 </Modal.Body>
@@ -65,4 +50,4 @@ function ModalInfoOffice(props) {
     )
 }
 
-export default ModalInfoOffice
+export default ModalChange

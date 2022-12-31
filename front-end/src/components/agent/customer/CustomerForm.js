@@ -2,19 +2,21 @@ import {useEffect, useState} from "react";
 import {Button, Dropdown, Form} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import {useDispatch, useSelector} from "react-redux";
-import {infoOfficeSelector, listOfficeSelector} from "../../redux/selector";
+import {
+    infoCustomerSelector,
+    listCustomerSelector
+} from "../../../redux/selector";
 import axios from "axios";
-import {apiOffice} from "../url";
-import office from "../../redux/reducer/office";
+import {apiCustomer, apiOffice} from "../../url";
+import customer from "../../../redux/reducer/customer";
 
-function OfficeForm(props) {
+function CustomerForm(props) {
     const [show, setShow] = useState(false)
     const [status, setStatus] = useState('')
     const [form, setForm] = useState({})
 
-    const initForm = useSelector(infoOfficeSelector)
-    const listOffice = useSelector(listOfficeSelector)
-    const listType = ['Đại lý', 'Cơ sở sản xuất', 'Cơ sở bảo hành']
+    const initForm = useSelector(infoCustomerSelector)
+    const listOffice = useSelector(listCustomerSelector)
 
     const dispatch = useDispatch()
 
@@ -26,20 +28,21 @@ function OfficeForm(props) {
         setForm(initForm)
         if (props.type !== "add") {
             document.getElementById("id").disabled = true
-        }
+            }
     }, [])
 
-    const changeId = (e) => {
+    const changeCustomerId = (e) => {
         setForm({
             ...form,
-            id: e.target.value
+            customer_id: e.target.value
         })
+
     }
 
     const changeName = (e) => {
         setForm({
             ...form,
-            name: e.target.value
+            fullname: e.target.value
         })
     }
 
@@ -57,42 +60,28 @@ function OfficeForm(props) {
         })
     }
 
-    const changeManager = (e) => {
-        setForm({
-            ...form,
-            manager: e.target.value
-        })
-    }
-
-    const changeType = (e) => {
-        setForm({
-            ...form,
-            type: e.target.value
-        })
-    }
-
     function checkId() {
-        let id = form.id
+        let id = form.customer_id
         if (id.length === 0) {
-            return "Bạn chưa nhập mã cơ sở"
+            return "Bạn chưa nhập mã nhân viên"
         }
         if (props.type === "add") {
             let office = listOffice.find(function (e) {
                 return e.id === id
             })
             if (office !== undefined) {
-                return "Cơ sở này đã tồn tại"
+                return "Mã nhân viên này đã tồn tại"
             }
         }
         return "Yes"
     }
 
     function checkName() {
-        if (form.name.length === 0) {
-            return "Bạn chưa nhập tên cơ sở"
+        if (form.fullname.length === 0) {
+            return "Bạn chưa nhập họ tên"
         }
-        if (form.name.length > 100) {
-            return "Tên cơ sở không được có độ dài quá 100 ký tự"
+        if (form.fullname.length > 100) {
+            return "Họ tên không được có độ dài quá 100 ký tự"
         }
         return "Yes"
     }
@@ -107,26 +96,6 @@ function OfficeForm(props) {
         return "Yes"
     }
 
-    function checkAddress() {
-        if (form.address.length === 0) {
-            return "Bạn chưa nhập địa chỉ"
-        }
-        if (form.address.length > 100) {
-            return "Địa chỉ không được có độ dài quá 100 ký tự"
-        }
-        return "Yes"
-    }
-
-    function checkManager() {
-        if (form.manager.length === 0) {
-            return "Bạn chưa nhập tên người quản lý"
-        }
-        if (form.manager.length > 100) {
-            return "Tên người quản lý không được có độ dài quá 100 ký tự"
-        }
-        return "Yes"
-    }
-
     const clickSubmit = (e) => {
         let success = true
         if (checkId() !== "Yes") {
@@ -137,9 +106,9 @@ function OfficeForm(props) {
         }
         if (checkName() !== "Yes") {
             success = false
-            document.getElementById("name-warning").innerText = checkName()
+            document.getElementById("fullname-warning").innerText = checkName()
         } else {
-            document.getElementById("name-warning").innerText = ""
+            document.getElementById("fullname-warning").innerText = ""
         }
         if (checkPhone() !== "Yes") {
             success = false
@@ -147,23 +116,11 @@ function OfficeForm(props) {
         } else {
             document.getElementById("phone-warning").innerText = ""
         }
-        if (checkAddress() !== "Yes") {
-            success = false
-            document.getElementById("address-warning").innerText = checkAddress()
-        } else {
-            document.getElementById("address-warning").innerText = ""
-        }
-        if (checkManager()!== "Yes") {
-            success = false
-            document.getElementById("manager-warning").innerText = checkManager()
-        } else {
-            document.getElementById("manager-warning").innerText = ''
-        }
+
         if (success) {
-            let token = localStorage.getItem('token')
             console.log(form)
             if (props.type === "add") {
-                axios.post(apiOffice, form)
+                axios.post(apiCustomer, form)
                     .then(response => {
                         if (response.status === 201) {
                             console.log(response)
@@ -177,7 +134,7 @@ function OfficeForm(props) {
                     })
                     .then(data => {
                         if (data.status === "success") {
-                            setStatus("Đã thêm nhân viên mới thành công!")
+                            setStatus("Đã thêm khách hàng mới thành công!")
                         } else {
                             setStatus(data.status)
                         }
@@ -188,7 +145,7 @@ function OfficeForm(props) {
                         setShow(true)
                     })
             } else {
-                axios.put(apiOffice + "/" + form.id, form)
+                axios.put(apiCustomer + "/" + form.id, form)
                     .then(response => {
                         if (response.status === 200) {
                             console.log(response)
@@ -222,9 +179,9 @@ function OfficeForm(props) {
     }
 
     useEffect(() => {
-        axios.get(apiOffice)
+        axios.get(apiCustomer)
             .then(response => {
-                dispatch(office.actions.setListOffice(response.data))
+                dispatch(customer.actions.setListCustomer(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -234,24 +191,24 @@ function OfficeForm(props) {
     return (
         <Form>
             <Form.Group className={"mb-3"}>
-                <Form.Label>Mã cơ sở</Form.Label>
+                <Form.Label>Mã khách hàng</Form.Label>
                 <Form.Control
                     id={"id"}
                     type={"text"}
-                    value={form.id}
-                    onChange={changeId}
+                    value={form.customer_id}
+                    onChange={changeCustomerId}
                 />
                 <Form.Text id={"id-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
-                <Form.Label>Tên cơ sở</Form.Label>
+                <Form.Label>Tên khách hàng</Form.Label>
                 <Form.Control
                     type={"text"}
-                    value={form.name}
+                    value={form.fullname}
                     onChange={changeName}
                 />
-                <Form.Text id={"name-warning"} className="text-danger"/>
+                <Form.Text id={"fullname-warning"} className="text-danger"/>
             </Form.Group>
 
             <Form.Group className={"mb-3"}>
@@ -271,27 +228,6 @@ function OfficeForm(props) {
                     value={form.address}
                     onChange={changeAddress}
                 />
-                <Form.Text id={"address-warning"} className="text-danger"/>
-            </Form.Group>
-
-            <Form.Group className={"mb-3"}>
-                <Form.Label>Tên người quản lý</Form.Label>
-                <Form.Control
-                    type={"text"}
-                    value={form.manager}
-                    onChange={changeManager}
-                />
-                <Form.Text id={"manager-warning"} className="text-danger"/>
-            </Form.Group>
-
-            <Form.Group className={"mb-3"}>
-                <Form.Label>Loại cơ sở</Form.Label>
-                <select className="form-select" aria-label="Loại" value={form.type} onChange={changeType}>
-                    {
-                        listType.length ? listType.map((type) => (
-                            <option key={type} value={type}>{type}</option>)) : null
-                    }
-                </select>
             </Form.Group>
 
             <div className={"d-flex flex-row-reverse"}>
@@ -332,4 +268,4 @@ function OfficeForm(props) {
     )
 }
 
-export default OfficeForm
+export default CustomerForm

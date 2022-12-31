@@ -2,13 +2,13 @@ import {Component, useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 import {FaRegTrashAlt} from "react-icons/fa";
 import axios from "axios";
-import {apiEmployee} from "../url";
+import {apiOffice} from "../../url";
 import {useDispatch} from "react-redux";
-import employee from "../../redux/reducer/employee";
+import office from "../../../redux/reducer/office";
 
 function ModalDelete(props) {
     const [show, setShow] = useState(false)
-    const [status, setStatus] = useState("Bạn muốn xóa nhân viên có mã " + props.id + "?")
+    const [status, setStatus] = useState("Bạn muốn xóa cơ sở có mã " + props.id + "?")
 
     const dispatch = useDispatch()
 
@@ -18,9 +18,9 @@ function ModalDelete(props) {
 
     const handleModalHide = () => {
         setShow(false)
-        axios.get(apiEmployee)
+        axios.get(apiOffice)
             .then(response => {
-                dispatch(employee.actions.setListEmployee(response.data))
+                dispatch(office.actions.setListOffice(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -28,7 +28,7 @@ function ModalDelete(props) {
     }
 
     const clickDelete = () => {
-        axios.delete(apiEmployee + "/" + props.id)
+        axios.delete(apiOffice + "/" + props.id)
             .then(response => {
                 setStatus(response.data.status)
             })

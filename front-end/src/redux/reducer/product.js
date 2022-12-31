@@ -5,23 +5,25 @@ export default createSlice({
     initialState: {
         filter: {
             searchText: '',
-            catalog: 'Danh mục',
-            warrantyPeriod: 'Thời gian bảo hành'
+            state: 'Trạng thái',
+            office: ''
         },
         listProduct: [],
         form: {
-            name: '',
-            image: [],
-            catalog: 'iphone',
-            warrantyPeriod: '',
-            mota: ''
+            product_id: '',
+            state: '',
+            lot_id: '',
+            lot: '',
+            agent_id:'',
+            agent: '',
+            warranty_id: '',
+            warranty: '',
+            warranty_times: ''
         }
     },
     reducers: {
         setListProduct: (state, action) => {
-            action.payload.map((e) => {
-                e.selected = false
-            })
+            console.log(action.payload)
             state.listProduct = action.payload
         },
         setSearchChange: (state, action) => {
@@ -29,18 +31,6 @@ export default createSlice({
         },
         formChange: (state, action) => {
             state.form = action.payload
-        },
-        selectedChange: (state, action) => {
-            state.listProduct.map((e) => {
-                if (e.name === action.payload) {
-                    e.selected = !e.selected
-                }
-            })
-        },
-        selectedAll: (state, action) => {
-            state.listProduct.map((e) => {
-                e.selected = action.payload
-            })
         }
     }
 })

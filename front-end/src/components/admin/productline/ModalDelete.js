@@ -2,9 +2,9 @@ import {useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 import {FaRegTrashAlt} from "react-icons/fa";
 import axios from "axios";
-import {apiEmployee, apiProduct} from "../url";
+import {apiProductLine} from "../../url";
 import {useDispatch} from "react-redux";
-import product from "../../redux/reducer/product";
+import productline from "../../../redux/reducer/productline";
 
 function ModalDelete(props) {
     const [show, setShow] = useState(false)
@@ -18,9 +18,9 @@ function ModalDelete(props) {
 
     const handleModalHide = () => {
         setShow(false)
-        axios.get(apiProduct)
+        axios.get(apiProductLine)
             .then(response => {
-                dispatch(product.actions.setListProduct(response.data))
+                dispatch(productline.actions.setListProductLine(response.data))
             })
             .catch(error => {
                 console.log(error)
@@ -28,7 +28,7 @@ function ModalDelete(props) {
     }
 
     const clickDelete = () => {
-        axios.delete(apiProduct + "/" + props.id)
+        axios.delete(apiProductLine + "/" + props.id)
             .then(response => {
                 setStatus(response.data.status)
             })

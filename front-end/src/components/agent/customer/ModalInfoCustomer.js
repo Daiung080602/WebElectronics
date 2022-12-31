@@ -1,10 +1,10 @@
 import {useState} from "react";
 import {Button, Modal} from "react-bootstrap";
-import ProductForm from "./ProductForm";
 import {useDispatch} from "react-redux";
-import product from "../../redux/reducer/product";
+import customer from "../../../redux/reducer/customer";
+import CustomerForm from "./CustomerForm";
 
-function ModalInfoProduct(props) {
+function ModalInfoCustomer(props) {
     const [show, setShow] = useState(false);
 
     const dispatch = useDispatch()
@@ -12,15 +12,14 @@ function ModalInfoProduct(props) {
     const clickButton = (e) => {
         setShow(true)
         if (props.type === "add") {
-            dispatch(product.actions.formChange({
-                name: '',
-                image: [],
-                catalog: 'iphone',
-                warrantyPeriod: '',
-                mota: ''
+            dispatch(customer.actions.formChange({
+                customer_id: '',
+                fullname: '',
+                phone: '',
+                address: ''
             }))
         } else {
-            dispatch(product.actions.formChange(props.info))
+            dispatch(customer.actions.formChange(props.info))
         }
     }
 
@@ -53,7 +52,7 @@ function ModalInfoProduct(props) {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ProductForm
+                    <CustomerForm
                         info={props.info}
                         type={props.type}
                         show={setShow}
@@ -64,4 +63,4 @@ function ModalInfoProduct(props) {
     )
 }
 
-export default ModalInfoProduct
+export default ModalInfoCustomer
