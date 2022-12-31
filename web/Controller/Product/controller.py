@@ -146,6 +146,8 @@ def update_state_if_agent_get_lot(current_office, id):
     try:
         role = current_office.role
         if role == 4:
+            json_input = request.get_json()
+
             lot = Lot.query.filter_by(lot_id=id).first()
             if not lot:
                 return {"error": "This lot is not exist"}, 400
@@ -153,10 +155,11 @@ def update_state_if_agent_get_lot(current_office, id):
                 products = Product.query.filter_by(lot_id=id).all()
                 for p in products:
                     p.state = "Đã nhận từ cơ sở sản xuất"
+                    p.agent_id = json_input['agent_id']
                 db.session.commit()
                 return {"status": "success"}, 200
         else:
-            return {'error': 'dont have permission create lot'}, 400
+            return {'error': 'dont have permission to change lot'}, 400
 
     except Exception as e:
         return {'error': str(e)}, 500

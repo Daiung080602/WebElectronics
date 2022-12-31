@@ -2,9 +2,9 @@ from flask import request
 from marshmallow import ValidationError
 
 from web.Extension.models import db
-from web.Controller.Customer import Customers, customer_schema, customers_schema
+from web.Controller.Customer import Customers, customer_schema, customers_schema, transaction_schema
 from web.Middleware.check_auth import token_required
-from web.Extension.models import Customer, Lot, Transaction, Product
+from web.Extension.models import Customer, Transaction, Product
 
 
 @Customers.route('/api/customers', methods=["GET"])
@@ -83,6 +83,41 @@ def update_customer(current_office, id):
 
         else:
             return {'error': 'dont have permission to change info of customer'}, 400
+
+    except Exception as e:
+        return {'error': str(e)}, 500
+
+
+@Customers.route('/api/transactions', methods=['POST'])
+@token_required
+def create_transaction(current_office):
+    try:
+        role = current_office.role
+        if role == 2:
+            json_input = request.get_json()
+
+            # validate data
+            try:
+                data = transaction_schema.load(json_input)
+            except ValidationError as err:
+                return {"error": err.messages}, 400
+
+            product = Product.query.filter_by(agent_id=current_office.office_id, product_id=data['product_id']).first()
+            customer = Customer.query.filter_by(customer_id=data['customer_id']).first()
+            if not product:
+                return {"error": "This agent doesn't have this product!"}, 400
+            elif not customer:
+                return {"error": "This customer doesn't exist!"}, 400
+            elif Transaction.query.filter_by(product_id=product.product_id).first():
+                return {"error": "This product was sold!"}, 400
+            else:
+                new_transaction = Transaction(**data)
+                db.session.add(new_transaction)
+                db.session.commit()
+                return {"status": "success"}, 201
+
+        else:
+            return {'error': 'dont have permission create transaction'}, 400
 
     except Exception as e:
         return {'error': str(e)}, 500
