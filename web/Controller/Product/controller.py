@@ -81,7 +81,7 @@ def update_product(current_office, id):
             db.session.commit()
         else:
             return {"error": "This product doesn't belong to this current office"}, 400
-        return {"message": "success"}, 200
+        return {"status": "success"}, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
@@ -127,9 +127,9 @@ def create_new_lot(current_office):
             else:
                 new_lot = Lot(**data)
                 for i in range(new_lot.amount):
-                    new_product = Product(state="Mới sản xuất", lot_id=new_lot.lot_id)
+                    new_product = Product(state="Mới sản xuất", lot_id=new_lot.lot_id, warranty_times=0)
                     db.session.add(new_product)
-                db.session.add(lot)
+                db.session.add(new_lot)
                 db.session.commit()
                 return {"status": "success"}, 201
 
@@ -140,3 +140,23 @@ def create_new_lot(current_office):
         return {'error': str(e)}, 500
 
 
+@Products.route('/api/lots/<id>', methods=['PUT'])
+@token_required
+def update_state_if_agent_get_lot(current_office, id):
+    try:
+        role = current_office.role
+        if role == 4:
+            lot = Lot.query.filter_by(lot_id=id).first()
+            if not lot:
+                return {"error": "This lot is not exist"}, 400
+            else:
+                products = Product.query.filter_by(lot_id=id).all()
+                for p in products:
+                    p.state = "Đã nhận từ cơ sở sản xuất"
+                db.session.commit()
+                return {"status": "success"}, 200
+        else:
+            return {'error': 'dont have permission create lot'}, 400
+
+    except Exception as e:
+        return {'error': str(e)}, 500

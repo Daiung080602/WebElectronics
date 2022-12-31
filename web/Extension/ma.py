@@ -156,8 +156,8 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
 
 @token_required
 def must_be_in_list_state(current_office, state):
-    list_state = ["Lỗi, cần bảo hành", "Đã nhận từ cơ sở sản xuất", "Đang sửa chữa bảo hành", "Lỗi, cần trả về nhà máy",
-                  "Lỗi, đã nhận từ bảo hành", "Đã bảo hành xong", "Mới sản xuất", "Đã bán", "Đã nhận từ bảo hành",
+    list_state = ["Mới sản xuất", "Đã nhận từ cơ sở sản xuất", "Đã bán", "Lỗi, cần bảo hành", "Đang sửa chữa bảo hành",
+                  "Lỗi, cần trả về nhà máy", "Lỗi, đã nhận từ bảo hành", "Đã bảo hành xong", "Đã nhận từ bảo hành",
                   "Trả lại KH sau bảo hành", "Hết thời gian bảo hành"]
     if not state in list_state:
         raise ValidationError(f"state must be one of {list_state}")
