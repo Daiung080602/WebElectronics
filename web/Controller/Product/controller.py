@@ -1,6 +1,6 @@
 from flask import request
 from marshmallow import ValidationError
-from web.Controller.Product import Products, product_schema, products_schema, lots_schema
+from web.Controller.Product import Products, product_schema, products_schema, lots_schema, lot_schema
 from web.Extension.models import Product, db, Office, Lot
 from web.Middleware.check_auth import token_required
 
@@ -73,6 +73,54 @@ def update_product(current_office, id):
     except Exception as e:
         return {"error": str(e)}, 500
 
+@Products.route('/api/lots', methods=['GET'])
+@token_required
+def get_all_lots(current_office):
+    try:
+        role = current_office.role
+        if role == 1:
+            lots = Lot.query.all()
+        elif role == 4:
+            lots = current_office.lots
+        elif role == 3:
+            lots = 2
+        elif role == 2:
+            lots = 1
+        return lots_schema.jsonify(lots)
+    except Exception as e:
+        return {'error': str(e)}, 500
 
+
+@Products.route('/api/lots', methods=['POST'])
+@token_required
+def create_new_lot(current_office):
+    try:
+        role = current_office.role
+        if role == 4:
+            json_input = request.get_json()
+
+            # validate data
+            try:
+                data = lot_schema.load(json_input)
+            except ValidationError as err:
+                return {"error": err.messages}, 400
+
+            lot = Lot.query.filter_by(lot_id=data['lot_id']).first()
+            if lot:
+                return {"error": "This lot id already have"}, 400
+            else:
+                new_lot = Lot(**data)
+                for i in range(new_lot.amount):
+                    new_product = Product(state="Mới sản xuất", lot_id=new_lot.lot_id)
+                    db.session.add(new_product)
+                db.session.add(lot)
+                db.session.commit()
+                return {"status": "success"}, 201
+
+        else:
+            return {'error': 'dont have permission create lot'}, 400
+
+    except Exception as e:
+        return {'error': str(e)}, 500
 
 

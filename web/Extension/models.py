@@ -38,7 +38,7 @@ class Productline(db.Model):
     type = Column(String(50), nullable=False)
     details = Column(Text, nullable=False)
     image = Column(Text)
-    date_warranty = Column(DateTime, nullable=False)        # Theo thang
+    date_warranty = Column(Integer, nullable=False)  # Theo thang
     lots = relationship('Lot', backref='productline', lazy=True)
     active = Column(Boolean)
 
@@ -55,6 +55,7 @@ class Lot(db.Model):
     def __str__(self):
         return self.lot_id
 
+
 class Product(db.Model):
     product_id = Column(Integer, primary_key=True, autoincrement=True)
     state = Column(String(50), nullable=False)
@@ -65,10 +66,11 @@ class Product(db.Model):
     agent = relationship("Office", backref="products_agent", uselist=False, foreign_keys=[agent_id])
     warranty = relationship("Office", backref="products_warranty", uselist=False, foreign_keys=[warranty_id])
     lot = relationship("Lot", backref="products_lot", uselist=False, foreign_keys=[lot_id])
-    
+    transaction = relationship("Transaction", uselist=False, backref='product')
+
     def __str__(self):
         return self.product_id
-    
+
 
 class Transaction(db.Model):
     product_id = Column(Integer, ForeignKey(Product.product_id), primary_key=True)
@@ -77,4 +79,3 @@ class Transaction(db.Model):
 
     def __str__(self):
         return f'Transaction: {self.product_id} is bought by {self.customer_id} on {self.buy_date}'
-    
