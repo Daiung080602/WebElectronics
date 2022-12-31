@@ -7,11 +7,12 @@ from web.Middleware.check_auth import token_required
 def must_be_all_number(id):
     if sum(c.isdigit() for c in id) != len(id):
         raise ValidationError("Each char must be digit.")
-    
+
+
 class OfficeSchema_login(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Office
-        
+
     office_id = fields.Str(
         required=True,
         validate=[validate.Length(equal=8), must_be_all_number]
@@ -19,13 +20,13 @@ class OfficeSchema_login(ma.SQLAlchemyAutoSchema):
     password = fields.Str(
         required=True,
         validate=[validate.Length(min=8, max=20),
-                validate.Regexp(
-                    regex='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$',
-                    error='Password must has length between 8 and 20, has digits, lower and upper letters'
-                )],
+                  validate.Regexp(
+                      regex='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$',
+                      error='Password must has length between 8 and 20, has digits, lower and upper letters'
+                  )],
         load_only=True
     )
-    
+
 
 class OfficeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -93,6 +94,10 @@ class LotSchema(ma.SQLAlchemyAutoSchema):
         validate=[must_be_in_list_productline_id]
     )
     office = ma.Nested(OfficeSchema)
+    number_of_product = fields.Method("num_of_products_in_lot_db")
+
+    def num_of_products_in_lot_db(self, lot):
+        return len(lot.products_lot)
 
 
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
@@ -108,6 +113,23 @@ class CustomerSchema(ma.SQLAlchemyAutoSchema):
 class ProductlineSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Productline
+
+    num_of_product_in_lots = fields.Method("num_of_products_in_productline_lots")
+    num_of_product_in_db = fields.Method("num_of_products_in_productline_db")
+
+    def num_of_products_in_productline_lots(self, pl):
+        lots = Lot.query.filter_by(productline_id=pl.productline_id).all()
+        num = 0
+        for l in lots:
+            num += l.amount
+        return num
+
+    def num_of_products_in_productline_db(self, pl):
+        lots = Lot.query.filter_by(productline_id=pl.productline_id).all()
+        num = 0
+        for l in lots:
+            num += len(l.products_lot)
+        return num
 
 
 @token_required
@@ -132,22 +154,30 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
     customer = ma.Nested(CustomerSchema)
 
 
+@token_required
+def must_be_in_list_state(current_office, state):
+    list_state = ["Lỗi, cần bảo hành", "Đã nhận từ cơ sở sản xuất", "Đang sửa chữa bảo hành", "Lỗi, cần trả về nhà máy",
+                  "Lỗi, đã nhận từ bảo hành", "Đã bảo hành xong", "Mới sản xuất", "Đã bán", "Đã nhận từ bảo hành",
+                  "Trả lại KH sau bảo hành", "Hết thời gian bảo hành"]
+    if not state in list_state:
+        raise ValidationError(f"state must be one of {list_state}")
+
 class ProductSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         include_fk = True
         model = Product
 
     agent_id = fields.Str(
-        required=True,
         validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_agent_id]
     )
     warranty_id = fields.Str(
-        required=True,
         validate=[validate.Length(equal=8), must_be_all_number, must_be_in_list_warranty_id]
+    )
+    state = fields.Str(
+        required=True,
+        validate=[must_be_in_list_state]
     )
     agent = ma.Nested(OfficeSchema)
     warranty = ma.Nested(OfficeSchema)
     lot = ma.Nested(LotSchema)
     transaction = ma.Nested(TransactionSchema)
-
-

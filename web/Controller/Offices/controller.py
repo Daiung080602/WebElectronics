@@ -9,7 +9,7 @@ from web.Controller.Offices import Offices, office_schema_put, offices_schema, o
 @token_required
 def get_all_warranty(current_office):
     try:
-        warranty = Office.query.filter_by(role=2).all()
+        warranty = Office.query.filter_by(role=3).all()
         return offices_schema.jsonify(warranty)
     except Exception as e:
         return {'error': str(e)}, 500
@@ -19,7 +19,7 @@ def get_all_warranty(current_office):
 @token_required
 def get_all_agent(current_office):
     try:
-        agent = Office.query.filter_by(role=3).all()
+        agent = Office.query.filter_by(role=2).all()
         return offices_schema.jsonify(agent)
     except Exception as e:
         return {'error': str(e)}, 500
