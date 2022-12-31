@@ -1,7 +1,6 @@
 from flask import Flask
 import os
 from web.Extension.models import db
-from web.Extension.admin import admin
 from web.Extension.ma import ma
 from web.Extension import migrate
 from flask_cors import CORS
@@ -42,9 +41,8 @@ def create_app(config_file='config.py'):
     db.init_app(app)
     create_db(app)
 
-    admin.init_app(app)
     ma.init_app(app)
     migrate.init_app(app, db)
-    # khi nào sửa cơ sở dữ liệu thì chạy 'flask db migrate', 'flask db upgrade'
+    # khi nào sửa cơ sở dữ liệu thì chạy 'flask db migrate' rồi 'flask db upgrade'
 
     return app

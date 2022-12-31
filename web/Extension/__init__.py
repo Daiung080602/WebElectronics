@@ -1,10 +1,8 @@
-from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 
 
 db = SQLAlchemy()
-admin = Admin(name='', template_mode='bootstrap4')
-ma = Marshmallow()
-migrate = Migrate()
+ma = Marshmallow()  # giúp validate dữ liệu và đưa dữ liệu về json
+migrate = Migrate()  # quản lý cơ sở dữ liệu
